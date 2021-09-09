@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import ShopListApp from "./shoplist";
+import User_Login from "./user_login";
 
 ReactDOM.render(
-    <ShopListApp />,
-    document.getElementById('root')
+  <User_Login />,
+  document.getElementById('root')
 );

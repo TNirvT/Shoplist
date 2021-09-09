@@ -22,5 +22,4 @@ module.exports = {
     path: path.resolve(__dirname, "./api/static"),
     filename: "[name].bundle.js",
   },
-  plugins: [new webpack.HotModuleReplacementPlugin()],
 };

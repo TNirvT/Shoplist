@@ -130,5 +130,5 @@ dmypy.json
 .secret/
 
 # npm/react
-.bundle.js
+*.bundle.js
 node_modules/
