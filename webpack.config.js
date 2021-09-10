@@ -4,7 +4,7 @@ const path = require("path");
 module.exports = {
   entry: {
     react_home: "./api/src/react_home.js",
-    shoplist: "./api/src/shoplist.js"
+    react_content: "./api/src/react_content.js",
   },
   module: {
     rules: [

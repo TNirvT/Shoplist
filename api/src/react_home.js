@@ -1,9 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 
-import User_Login from "./user_login";
+import Home from "./components/home";
 
 ReactDOM.render(
-  <User_Login />,
-  document.getElementById('root')
+  <Home />,
+  document.getElementById("root")
 );

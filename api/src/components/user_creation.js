@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-export default function User_Login() {
+export default function UserCreation() {
   const [new_user, set_new_user] = useState({});
   const [name_message, set_name_message] = useState("");
   const [email_message, set_email_message] = useState("");
@@ -81,7 +81,7 @@ export default function User_Login() {
       }
     };
 
-    axios.put("/create_user", {
+    axios.put("/user_creation", {
       user_name: new_user.user_name,
       user_email: new_user.user_email,
       password: new_user.password
@@ -98,21 +98,18 @@ export default function User_Login() {
     <React.Fragment>
     <h1>Create an account</h1>
     <input
-      id="name-input"
       type="text"
       placeholder="Name"
       onBlur={name_check}
     /><br/>
     {name_message && <div><span>{name_message}</span></div>}
     <input
-      id="email-input"
       type="text"
       placeholder="Email"
       onBlur={email_exists_check}
     /><br/>
     {email_message && <div><span>{email_message}</span></div>}
     <input
-      id="password-input"
       type="password"
       placeholder="Password"
       onBlur={password_check}
