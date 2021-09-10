@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import Flask
 import mysql.connector as connector
 from mysql.connector import errorcode
@@ -12,6 +14,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_mapping({
         "SECRET_KEY": secret_phrase,
+        "PERMANENT_SESSION_LIFETIME": timedelta(days=30),
     })
     cur.execute(f"CREATE DATABASE IF NOT EXISTS {db_name} DEFAULT CHARACTER SET 'utf8'")
     cur.execute(f"USE {db_name}")

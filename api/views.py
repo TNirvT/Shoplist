@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
+
 from . import cnx, cur
 
 views = Blueprint("views", __name__)
@@ -10,19 +11,30 @@ def index():
 
 @views.route("/login", methods=["POST"])
 def login():
-    email = request.get_json()['email']
-    password = request.get_json()['password']
-    cur.execute(f"SELECT password_hash FROM Users WHERE email = '{email}'")
-    hash_fr_db = cur.fetchone()
-    if check_password_hash(hash_fr_db[0], password):
+    # email = request.get_json()["email"]
+    # password = request.get_json()["password"]
+    email = request.form.get("email")
+    password = request.form.get("password")
+    cur.execute(f"SELECT password_hash, user_name FROM Users WHERE email = '{email}'")
+    data_fr_db = cur.fetchone()
+    if data_fr_db and check_password_hash(data_fr_db[0], password):
+        session["user_email"] = email
+        session["user_name"] = data_fr_db[1]
+        session.permanent = True
         # debug only:
         print(f"logged in: {email, password}")
-        # return redirect(url_for("views.content"))
-        return jsonify({"redirect": "logged in successfully, redirecting to content...",
-            "location": url_for("views.content")}), 302
+        return redirect(url_for("views.content"))
+        # return jsonify({
+        #     "redirect": "logged in successfully, redirecting to content...",
+        #     "location": url_for("views.content")}), 302
     else:
-        print("log in failed")
-        return ""
+        # debug only:
+        print("incorrect credentials")
+        return "incorrect credentials", 403
+
+@views.route("/logout")
+def logout():
+    return
 
 @views.route("/existing_email", methods=["GET"])
 def existing_email():
@@ -33,15 +45,35 @@ def existing_email():
 
 @views.route("/user_creation", methods=["PUT"])
 def user_creation():
-    user_name = request.get_json()["user_name"]
-    user_email = request.get_json()["user_email"]
-    password = request.get_json()["password"]
+    # user_name = request.get_json()["user_name"]
+    # user_email = request.get_json()["user_email"]
+    # password = request.get_json()["password"]
+    user_name = request.form.get("user_name").strip()
+    user_email = request.form.get("user_email").strip()
+
+    cur.execute(f"SELECT email FROM Users WHERE email = '{user_email}'")
+    if cur.fetchone():
+        return "User email already registered", 403
+
+    password = request.form.get("password").strip()
+    if len(password) < 6 or len(password) > 30:
+        return "Password length error", 403
+
     password_hash = generate_password_hash(password) # in a format of "method$salt$hash"
     print(f"creating new user: {user_name}, {user_email}, {password_hash}")
     cur.execute(f"""INSERT INTO Users(email, user_name, password_hash)
         VALUES ('{user_email}', '{user_name}', '{password_hash}')""")
     cnx.commit()
-    return "created"
+
+    cur.execute(f"SELECT password_hash, user_name FROM Users WHERE email = '{user_email}'")
+    data_fr_db = cur.fetchone()
+    if data_fr_db and check_password_hash(data_fr_db[0], password):
+        session["user_email"] = user_email
+        session["user_name"] = data_fr_db[1]
+        session.permanent = True
+        # debug only:
+        print(f"logged in: {user_email, password}")
+    return redirect(url_for("views.content"))
 
 @views.route("/user_chg_pw", methods=["PUT"])
 def user_chg_pw():
@@ -53,4 +85,7 @@ def user_deletion():
 
 @views.route("/content", methods=["GET"])
 def content():
-    return "content"
+    if session["user_email"]:
+        print(session["user_email"], "is the current user")
+        return render_template("content.html")
+    return redirect(url_for("views.index"))

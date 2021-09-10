@@ -81,6 +81,16 @@ export default function UserCreation() {
       }
     };
 
+    document.newUserForm.submit();
+  };
+
+  function create_user_ajax() {
+    for (const field in validate_all) {
+      if (!validate_all[field]) {
+        return
+      }
+    };
+
     axios.put("/user_creation", {
       user_name: new_user.user_name,
       user_email: new_user.user_email,
@@ -97,27 +107,32 @@ export default function UserCreation() {
   return (
     <React.Fragment>
     <h1>Create an account</h1>
-    <input
-      type="text"
-      placeholder="Name"
-      onBlur={name_check}
-    /><br/>
-    {name_message && <div><span>{name_message}</span></div>}
-    <input
-      type="text"
-      placeholder="Email"
-      onBlur={email_exists_check}
-    /><br/>
-    {email_message && <div><span>{email_message}</span></div>}
-    <input
-      type="password"
-      placeholder="Password"
-      onBlur={password_check}
+    <form name="newUserForm" method="PUT" action="/user_creation">
+      <input
+        type="text"
+        placeholder="Name"
+        name="user_name"
+        onBlur={name_check}
       /><br/>
-    {password_message && <div><span>{password_message}</span></div>}
-    <button onClick={create_user}>
-      Next
-    </button>
+      {name_message && <div><span>{name_message}</span></div>}
+      <input
+        type="text"
+        placeholder="Email"
+        name="user_email"
+        onBlur={email_exists_check}
+      /><br/>
+      {email_message && <div><span>{email_message}</span></div>}
+      <input
+        type="password"
+        placeholder="Password"
+        name="password"
+        onBlur={password_check}
+        /><br/>
+      {password_message && <div><span>{password_message}</span></div>}
+      <button onClick={create_user}>
+        Next
+      </button>
+    </form>
     {message && <div><span>{message}</span></div>}
     </React.Fragment>
   )
