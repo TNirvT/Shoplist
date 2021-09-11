@@ -45,9 +45,8 @@ def existing_email():
 
 @views.route("/user_creation", methods=["PUT"])
 def user_creation():
-    # user_name = request.get_json()["user_name"]
-    # user_email = request.get_json()["user_email"]
-    # password = request.get_json()["password"]
+    # user_name = request.get_json()["user_name"].strip()
+    # user_email = request.get_json()["user_email"].strip()
     user_name = request.form.get("user_name").strip()
     user_email = request.form.get("user_email").strip()
 
@@ -55,6 +54,7 @@ def user_creation():
     if cur.fetchone():
         return "User email already registered", 403
 
+    # password = request.get_json()["password"].strip()
     password = request.form.get("password").strip()
     if len(password) < 6 or len(password) > 30:
         return "Password length error", 403
@@ -85,7 +85,8 @@ def user_deletion():
 
 @views.route("/content", methods=["GET"])
 def content():
-    if session["user_email"]:
+    if not session["user_email"]:
         print(session["user_email"], "is the current user")
-        return render_template("content.html")
-    return redirect(url_for("views.index"))
+        return redirect(url_for("views.index"))
+    
+    return render_template("content.html")
