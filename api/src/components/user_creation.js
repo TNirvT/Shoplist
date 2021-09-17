@@ -2,38 +2,38 @@ import React, { useState } from "react";
 import axios from "axios";
 
 export default function UserCreation() {
-  const [new_user, set_new_user] = useState({});
-  const [name_message, set_name_message] = useState("");
-  const [email_message, set_email_message] = useState("");
-  const [password_message, set_password_message] = useState("");
-  const [validate_all, set_validate_all] = useState({
-    user_name: false,
-    user_email: false,
+  const [newUser, setNewUser] = useState({});
+  const [nameMessage, setNameMessage] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState("");
+  const [validateAll, setValidateAll] = useState({
+    userName: false,
+    userEmail: false,
     password: false
   });
-  const [message, set_message] = useState("");
+  const [message, setMessage] = useState("");
   
-  function name_check(e) {
+  function nameCheck(e) {
     if ( e.target.value.trim().length < 1 ) {
-      set_new_user({...new_user, ["user_name"]:null});
-      set_name_message(`User name must not be empty`);
-      set_validate_all({...validate_all, ["user_name"]:false});
+      setNewUser({...newUser, userName:null});
+      setNameMessage(`User name must not be empty`);
+      setValidateAll({...validateAll, userName:false});
     } else {
-      set_new_user({...new_user, ["user_name"]:e.target.value.trim()});
-      set_name_message(`✔`);
-      set_validate_all({...validate_all, ["user_name"]:true});
+      setNewUser({...newUser, userName:e.target.value.trim()});
+      setNameMessage(`✔`);
+      setValidateAll({...validateAll, userName:true});
     }
   };
 
-  function email_exists_check(e) {
-    const re_email = /^\w+@\w+\.\w+$/;
-    if ( re_email.test(e.target.value.trim()) ) {
-      set_new_user({...new_user, ["user_email"]:e.target.value.trim()});
-      set_email_message("");
+  function emailExistsCheck(e) {
+    const reEmail = /^[\w\.]+@\w+\.\w+$/;
+    if ( reEmail.test(e.target.value.trim()) ) {
+      setNewUser({...newUser, userEmail:e.target.value.trim()});
+      setEmailMessage("");
     } else {
-      set_new_user({...new_user, ["user_email"]:null});
-      set_email_message(`Invalid Email`);
-      set_validate_all({...validate_all, ["user_email"]:false});
+      setNewUser({...newUser, userEmail:null});
+      setEmailMessage(`Invalid Email`);
+      setValidateAll({...validateAll, userEmail:false});
       return
     };
 
@@ -43,96 +43,86 @@ export default function UserCreation() {
       },
     }).then(res => {
       if (res.data.email_exists) {
-        set_email_message(`Email already exists`);
-        set_validate_all({...validate_all, ["user_email"]:false});
+        setEmailMessage(`Email already exists`);
+        setValidateAll({...validateAll, userEmail:false});
       } else {
-        set_email_message(`✔`);
-        set_validate_all({...validate_all, ["user_email"]:true});
+        setEmailMessage(`✔`);
+        setValidateAll({...validateAll, userEmail:true});
       };
     }).catch(err => {
       if (err != undefined) {
-        set_email_message(err.message);
+        setEmailMessage(err.message);
       }
     });
   };
 
-  function password_check(e) {
-    let re_pw = /[ ]/;
-    const new_pw = e.target.value;
-    if (re_pw.test(new_pw)) {
-      set_new_user({...new_user, ["password"]:null});
-      set_password_message(`Password must not contain white-space`);
-      set_validate_all({...validate_all, ["password"]:false});
-    } else if (new_pw.length < 6) {
-      set_new_user({...new_user, ["password"]:null});
-      set_password_message(`Password must be at least 6 characters`);
-      set_validate_all({...validate_all, ["password"]:false});
+  function passwordCheck(e) {
+    let rePw = /[ ]/;
+    const newPw = e.target.value;
+    if (rePw.test(newPw)) {
+      setNewUser({...newUser, password:null});
+      setPasswordMessage(`Password must not contain white-space`);
+      setValidateAll({...validateAll, password:false});
+    } else if (newPw.length < 6) {
+      setNewUser({...newUser, password:null});
+      setPasswordMessage(`Password must be at least 6 characters`);
+      setValidateAll({...validateAll, password:false});
     } else {
-      set_new_user({...new_user, ["password"]:new_pw});
-      set_password_message(`✔`);
-      set_validate_all({...validate_all, ["password"]:true});
+      setNewUser({...newUser, password:newPw});
+      setPasswordMessage(`✔`);
+      setValidateAll({...validateAll, password:true});
     };
   };
 
-  function create_user() {
-    for (const field in validate_all) {
-      if (!validate_all[field]) {
-        return
-      }
-    };
-
-    document.newUserForm.submit();
-  };
-
-  function create_user_ajax() {
-    for (const field in validate_all) {
-      if (!validate_all[field]) {
+  function createUser() {
+    for (const field in validateAll) {
+      if (!validateAll[field]) {
+        setMessage("Some of the fields are invalid")
         return
       }
     };
 
     axios.put("/user_creation", {
-      user_name: new_user.user_name,
-      user_email: new_user.user_email,
-      password: new_user.password
+      user_name: newUser.userName,
+      user_email: newUser.userEmail,
+      password: newUser.password
     }).then(res => {
-      set_message("new user created");
+      setMessage("new user created");
+      window.location = res.data.location;
     }).catch(err => {
       if (err != undefined) {
-        set_message(err.message);
-      }
+        setMessage(err.message);
+      };
     });
   };
 
   return (
     <React.Fragment>
     <h1>Create an account</h1>
-    <form name="newUserForm" method="PUT" action="/user_creation">
-      <input
-        type="text"
-        placeholder="Name"
-        name="user_name"
-        onBlur={name_check}
+    <input
+      type="text"
+      placeholder="Name"
+      name="user_name"
+      onBlur={nameCheck}
+    /><br/>
+    {nameMessage && <div><span>{nameMessage}</span></div>}
+    <input
+      type="text"
+      placeholder="Email"
+      name="userEmail"
+      onBlur={emailExistsCheck}
+    /><br/>
+    {emailMessage && <div><span>{emailMessage}</span></div>}
+    <input
+      type="password"
+      placeholder="Password"
+      name="password"
+      onBlur={passwordCheck}
       /><br/>
-      {name_message && <div><span>{name_message}</span></div>}
-      <input
-        type="text"
-        placeholder="Email"
-        name="user_email"
-        onBlur={email_exists_check}
-      /><br/>
-      {email_message && <div><span>{email_message}</span></div>}
-      <input
-        type="password"
-        placeholder="Password"
-        name="password"
-        onBlur={password_check}
-        /><br/>
-      {password_message && <div><span>{password_message}</span></div>}
-      <button onClick={create_user}>
-        Next
-      </button>
-    </form>
+    {passwordMessage && <div><span>{passwordMessage}</span></div>}
+    <button onClick={createUser}>
+      Next
+    </button>
     {message && <div><span>{message}</span></div>}
     </React.Fragment>
   )

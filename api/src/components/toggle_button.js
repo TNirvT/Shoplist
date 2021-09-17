@@ -1,11 +1,8 @@
 import React, { useState } from "react";
-import ReactDOM from "react-dom";
 
-export default function ToggleButton({text, on_toggle}) {
+export default function ToggleButton({text, onToggle}) {
   return (
-    <div>
-      <button onClick={on_toggle}>{text}</button>
-    </div>
+    <button onClick={onToggle}>{text}</button>
   )
 }
 

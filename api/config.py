@@ -22,6 +22,7 @@ with open(secret_phrase_path, "r") as f:
     secret_phrase = f.read()
 
 # mysql database login info
+# {"host":"domain/ip", "port":1234, "user":"user login", "password":"***"}
 db_credential_path = secret_dir / "db_credential.json"
 if not db_credential_path:
     db_credential = None
