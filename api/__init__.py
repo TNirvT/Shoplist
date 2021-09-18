@@ -17,11 +17,8 @@ def create_app():
         "PERMANENT_SESSION_LIFETIME": timedelta(days=30),
     })
     cur = cnx.cursor()
-    cur.execute(
-        """CREATE DATABASE IF NOT EXISTS %s DEFAULT CHARACTER SET 'utf8';
-        USE %s""",
-        (db_name, db_name,)
-    )
+    cur.execute(f"CREATE DATABASE IF NOT EXISTS {db_name} DEFAULT CHARACTER SET 'utf8'")
+    cur.execute(f"USE {db_name}")
     for table_name in TABLES:
         table = TABLES[table_name]
         try:
