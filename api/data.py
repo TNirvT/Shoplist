@@ -10,10 +10,10 @@ def check_existing_source(url):
         WHERE s.url = %s""",
         (url,)
     )
-    result = cur.fetchone()[0]
-    print(*result, sep="\n") #debug
+    result = cur.fetchone() and cur.fetchone()[0]
+    if result: print(*result, sep="\n") #debug
     rows = cur.fetchall()
-    print(*rows, sep="\n") #debug
+    if rows: print(*rows, sep="\n") #debug
     cur.close()
     return int(result or 0)
 

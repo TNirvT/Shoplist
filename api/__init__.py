@@ -6,6 +6,7 @@ from mysql.connector import errorcode
 
 from .config import secret_phrase, db_credential, db_name
 from .models import TABLES
+from .shoplist import SHOPS
 
 cnx = connector.connect(**db_credential)
 cnx.autocommit = False
@@ -29,6 +30,12 @@ def create_app():
                 pass
             else:
                 print(err.msg)
+    for shop in SHOPS:
+        cur.execute("SELECT id, shop FROM shops WHERE shop = %s", (shop,))
+        shop_id = cur.fetchone()
+        if not shop_id:
+            cur.execute("INSERT INTO shops (shop) VALUES (%s)", (shop,))
+            cnx.commit()
     cur.close()
     from .views import views
     app.register_blueprint(views, url_prefix="/")

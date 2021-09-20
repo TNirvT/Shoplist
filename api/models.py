@@ -1,7 +1,7 @@
 TABLES = {}
 
 TABLES["users"] = ("""
-    CREATE TABLE users (
+    CREATE TABLE IF NOT EXISTS users (
         id INT(10) AUTO_INCREMENT,
         email VARCHAR(30) NOT NULL UNIQUE,
         user_name VARCHAR(30) NOT NULL,
@@ -11,7 +11,7 @@ TABLES["users"] = ("""
 """)
 
 TABLES["products"] = ("""
-    CREATE TABLE products (
+    CREATE TABLE IF NOT EXISTS products (
         id INT(10) AUTO_INCREMENT,
         user_id INT(10),
         item_name VARCHAR(300) NOT NULL,
@@ -24,7 +24,7 @@ TABLES["products"] = ("""
 """)
 
 TABLES["sources"] = ("""
-    CREATE TABLE sources (
+    CREATE TABLE IF NOT EXISTS sources (
         id INT(10) AUTO_INCREMENT,
         url VARCHAR(500) NOT NULL UNIQUE,
         PRIMARY KEY (id)
@@ -32,7 +32,7 @@ TABLES["sources"] = ("""
 """)
 
 TABLES["product_source_links"] = ("""
-    CREATE TABLE product_source_links (
+    CREATE TABLE IF NOT EXISTS product_source_links (
         product_id INT(10),
         source_id INT(10),
         PRIMARY KEY (product_id, source_id),
@@ -42,7 +42,7 @@ TABLES["product_source_links"] = ("""
 """)
 
 TABLES["product_types"] = ("""
-    CREATE TABLE product_types (
+    CREATE TABLE IF NOT EXISTS product_types (
         id INT(10),
         type VARCHAR(30) NOT NULL,
         PRIMARY KEY (id)
@@ -50,15 +50,15 @@ TABLES["product_types"] = ("""
 """)
 
 TABLES["shops"] = ("""
-    CREATE TABLE shops (
-        id INT(10),
+    CREATE TABLE IF NOT EXISTS shops (
+        id INT(10) AUTO_INCREMENT,
         shop VARCHAR(30) NOT NULL,
         PRIMARY KEY (id)
     ) ENGINE=InnoDB
 """)
 
 TABLES["price_history"] = ("""
-    CREATE TABLE price_history (
+    CREATE TABLE IF NOT EXISTS price_history (
         source_id INT(10),
         date DATE,
         price DEC(10,2) NOT NULL,

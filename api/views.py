@@ -85,7 +85,6 @@ def user_creation():
         return "Invalid password", 403
 
     password_hash = generate_password_hash(password) # in format "method$salt$hash"
-    print(f"creating new user: {user_name}, {user_email}, {password_hash}")
     cur.execute(
         """INSERT INTO users(email, user_name, password_hash)
         VALUES (%s, %s, %s)""",
