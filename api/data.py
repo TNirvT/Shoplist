@@ -12,7 +12,7 @@ def check_existing_source(url):
     )
     result = cur.fetchone() and cur.fetchone()[0]
     if result: print(*result, sep="\n") #debug
-    rows = cur.fetchall()
+    rows = cur.fetchall() #debug
     if rows: print(*rows, sep="\n") #debug
     cur.close()
     return int(result or 0)

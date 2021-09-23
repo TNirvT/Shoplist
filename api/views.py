@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import cnx
 from .data import *
-from .shoplist import scrap_product_data
+from .shoplist import url_parser, scrap_product_data
 
 views = Blueprint("views", __name__)
 
@@ -133,20 +133,29 @@ def get_name():
     cur.close()
     return jsonify({"user_name": user_name})
 
-@views.route("/get_product", methods=["GET"])
+@views.route("/get_product_data", methods=["GET"])
 def get_product():
     if not validate_user(): return redirect(url_for("views.index"))
-    id_found = check_existing_source(request.args.get("url"))
-    if id_found:
+    # (url_norm, shop) = url_parser(request.args.get("url"))
+    print("001") #debug
+    url_norm = url_parser(request.args.get("url"))[0]
+    shop = url_parser(request.args.get("url"))[1]
+    print("002") #debug
+    source_id = check_existing_source(url_norm)
+    if source_id:
         print("provided url alrdy in record") #debug
         return jsonify({
-            "item": get_db_product(id_found),
-            "price": get_db_latest_price(id_found),
+            "url_norm": url_norm,
+            "item": get_db_product(source_id),
+            "price": get_db_latest_price(source_id)[0],
+            "date": get_db_latest_price(source_id)[1],
         })
-    result = scrap_product_data(request.args.get("url"))
+    result = scrap_product_data(url_norm, shop)
     return jsonify({
+        "url_norm": url_norm,
         "item": result[0],
         "price": result[1],
+        "date": result[2],
     })
 
 @views.route("/add_item", methods=["PUT"])
@@ -175,7 +184,7 @@ def add_item():
     cur.execute(
         """INSERT INTO price_history (source_id, date, price)
         VALUES (%s, %s, %s)""",
-        (source_id, datetime.now().strftime("%Y-%m-%d"), r.price,)
+        (source_id, r.date, r.price,)
     )
     cnx.commit()
     cur.close()

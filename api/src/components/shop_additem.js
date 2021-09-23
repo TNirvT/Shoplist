@@ -10,6 +10,7 @@ export default function ShopAddItem({userName}) {
     url:"",
     item:"",
     price:"",
+    data:"",
     brand:"",
     type:""
   });
@@ -27,12 +28,12 @@ export default function ShopAddItem({userName}) {
   };
 
   function get_product_data() {
-    axios.get("/get_product", {
+    axios.get("/get_product_data", {
       params: {
         url: newItem.url,
       },
     }).then(res => {
-      setNewItem({...newItem, item: res.data.item, price: res.data.price});
+      setNewItem({...newItem, item: res.data.item, price: res.data.price, date: res.data.date});
     }).catch(err => {
       if (err != undefined) {
         setMessage(err.message);
@@ -43,8 +44,7 @@ export default function ShopAddItem({userName}) {
   function addItemToDB() {
     axios.put("/add_item", newItem
     ).then(res => {
-      const timeNow = new Date().toLocaleTimeString();
-      console.log(`${timeNow}: added to database`);
+      console.log(`Item added`);
     }).catch(err => {
       if (err != undefined) {
         console.log(err.message);
