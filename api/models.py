@@ -27,7 +27,9 @@ TABLES["sources"] = ("""
     CREATE TABLE IF NOT EXISTS sources (
         id INT(10) AUTO_INCREMENT,
         url VARCHAR(500) NOT NULL UNIQUE,
-        PRIMARY KEY (id)
+        source_id INT(10),
+        PRIMARY KEY (id),
+        FOREIGN KEY (source_id) REFERENCES sources(id)
     ) ENGINE=InnoDB
 """)
 

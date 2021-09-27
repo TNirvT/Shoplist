@@ -3,19 +3,16 @@ from . import cnx
 def check_existing_source(url):
     cur = cnx.cursor()
     cur.execute(
-        """SELECT p.id, p.user_id, p.item_name 
+        """SELECT p.id, p.user_id, p.item_name, s.id
         FROM products p
         JOIN product_source_links l ON p.id = l.product_id
         JOIN sources s ON l.source_id = s.id
         WHERE s.url = %s""",
         (url,)
     )
-    result = cur.fetchone() and cur.fetchone()[0]
-    if result: print(*result, sep="\n") #debug
-    rows = cur.fetchall() #debug
-    if rows: print(*rows, sep="\n") #debug
+    result = cur.fetchone() and cur.fetchone()
     cur.close()
-    return int(result or 0)
+    return result
 
 def get_db_product(product_id):
     cur = cnx.cursor()
@@ -34,3 +31,43 @@ def get_db_latest_price(source_id):
     result = cur.fetchone()
     cur.close()
     return result
+
+def add_product(url, user_id, item_name, alias, date_now, price):
+    cur = cnx.cursor()
+    cur.execute(
+        """INSERT INTO sources (url)
+        VALUES (%s)""",
+        (url,)
+    )
+    source_id = cur.lastrowid
+    cur.execute(
+        """INSERT INTO products (user_id, item_name, user_alias, brand, type)
+        VALUES (%s, %s, %s, DEFAULT, DEFAULT)""",
+        (user_id, item_name, alias,)
+    )
+    cur.execute(
+        """INSERT INTO product_source_links (product_id, source_id)
+        VALUES (LAST_INSERT_ID(), %s)""",
+        (source_id,)
+    )
+    cur.execute(
+        """INSERT INTO price_history (source_id, date, price)
+        VALUES (%s, %s, %s)""",
+        (source_id, date_now, price,)
+    )
+    cnx.commit()
+    cur.close()
+
+def add_product_w_existing_source(user_id, item_name, alias, source_id):
+    cur = cnx.cursor()
+    cur.execute(
+        """INSERT INTO products (user_id, item_name, user_alias, brand, type)
+        VALUES (%s, %s, %s, DEFAULT, DEFAULT)""",
+        (user_id, item_name, alias,)
+    )
+    cur.execute(
+        """INSERT INTO product_source_links (product_id, source_id)
+        VALUES (LAST_INSERT_ID(), %s)""",
+        (source_id,)
+    )
+    cur.close()

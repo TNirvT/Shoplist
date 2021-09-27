@@ -11,7 +11,7 @@ from .shoplist import url_parser, scrap_product_data
 views = Blueprint("views", __name__)
 
 def validate_user():
-    if session.get("user_id"): return True
+    if session.get("user_id"): return session["user_id"]
     else: return False
 
 @views.route("/", methods=["GET"])
@@ -136,19 +136,19 @@ def get_name():
 @views.route("/get_product_data", methods=["GET"])
 def get_product():
     if not validate_user(): return redirect(url_for("views.index"))
-    # (url_norm, shop) = url_parser(request.args.get("url"))
-    print("001") #debug
-    url_norm = url_parser(request.args.get("url"))[0]
-    shop = url_parser(request.args.get("url"))[1]
-    print("002") #debug
+    (url_norm, shop) = url_parser(request.args.get("url"))
+    if not url_norm:
+        return jsonify({
+            "error": "Invalid URL",
+        })
     source_id = check_existing_source(url_norm)
     if source_id:
-        print("provided url alrdy in record") #debug
+        result_db = get_db_latest_price(source_id)
         return jsonify({
             "url_norm": url_norm,
             "item": get_db_product(source_id),
-            "price": get_db_latest_price(source_id)[0],
-            "date": get_db_latest_price(source_id)[1],
+            "price": result_db[0],
+            "date": result_db[1],
         })
     result = scrap_product_data(url_norm, shop)
     return jsonify({
@@ -160,34 +160,21 @@ def get_product():
 
 @views.route("/add_item", methods=["PUT"])
 def add_item():
-    if not validate_user(): return redirect(url_for("views.index"))
+    current_user = validate_user()
+    if not current_user: return redirect(url_for("views.index"))
     r = request.get_json()
-    id_found_by_url = check_existing_source(r.url)
-    if id_found_by_url:
-        return jsonify({ "added_item": False })
-        # if product id found bleongs to another user
-    cur = cnx.cursor()
-    cur.execute(
-        """INSERT INTO sources (url)
-        VALUES (%s)""",
-        (r.url,)
-    )
-    source_id = cur.lastrowid
-    cur.execute(
-        """INSERT INTO products (user_id, item_name, user_alias, brand, type)
-        VALUES (%s, %s, DEFAULT, DEFAULT, DEFAULT);
-        INSERT INTO product_source_links (product_id, source_id)
-        VALUES (LAST_INSERT_ID(), %s)""",
-        (session["user_id"], r.item, source_id,)
-    )
-    # if want to link new source to existing product
-    cur.execute(
-        """INSERT INTO price_history (source_id, date, price)
-        VALUES (%s, %s, %s)""",
-        (source_id, r.date, r.price,)
-    )
-    cnx.commit()
-    cur.close()
+    product_linked_to_url = check_existing_source(r["url"])
+    if product_linked_to_url:
+        (pid, uid, item, sid) = product_linked_to_url
+        if uid == current_user:
+            return jsonify({
+                "added_item": False,
+                "error": f"{item} already in record ({pid})",
+            })
+        else:
+            add_product_w_existing_source(current_user, r["item"], r["alias"], sid)
+            return
+    add_product(r["url"], current_user, r["item"], r["alias"], r["date"], r["price"])
     print("new row added") #debug
     return jsonify({ "added_item": True })
 

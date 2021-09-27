@@ -1,16 +1,17 @@
 import re
 import requests
+from urllib.parse import urlparse, urlunparse
 from datetime import datetime
 
 from bs4 import BeautifulSoup
 
-# [simple tags: boolean, regex: raw string]
+# [shop domain: str, params, query: regex str, simple tags: boolean]
 SHOPS = {
-    "Amazon US": [r"amazon\.com(/[^/\s]+)?/dp/[^/\s]+", True],
-    "Amazon Japan": [r"amazon\.co\.jp(/[^/\s]+)?/dp/[^/\s]+", True],
-    "Amazon UK": [r"amazon\.co\.uk(/[^/\s]+)?/dp/[^/\s]+", True],
-    "B&H": [r"bhphotovideo\.com/c/product/[^/\s]+/[^/\s]+\.html$", True],
-    "Best Buy": [r"bestbuy\.com/site/[^/\s]+/\d+\.p\?skuId=\d+", False],
+    "Amazon US": ["www.amazon.com", r"(/[^/\s]+)?/dp/[^/\s]+", "", "", True],
+    "Amazon Japan": ["www.amazon.co.jp", r"(/[^/\s]+)?/dp/[^/\s]+", "", "", True],
+    "Amazon UK": ["www.amazon.co.uk", r"(/[^/\s]+)?/dp/[^/\s]+", "", "", True],
+    # "B and H": ["www.bhphotovideo.com", r"/c/product/[^/\s]+/[^/\s]+\.html$", "", "", True],
+    "Best Buy": ["www.bestbuy.com", r"/site/[^/\s]+/\d+\.p", "", r"skuId=\d+", False],
 }
 
 # https://www.amazon.com/dp/B07YNHYQ5Z/
@@ -23,27 +24,34 @@ SHOPS = {
 
 def url_parser(url: str):
     url = url.strip()
+    # normalize to https://www...
+    if re.search(r"//(?=[^/\s]+/[^/\s]+)", url):
+        o = urlparse(url, allow_fragments=False)
+        print(11,o) #debug
+    else:
+        o = urlparse("//" + url)
+        print(12,o) #debug
+    o = o._replace(scheme="https")
+    print(13,o) #debug
+    if not re.match(r"^www\.", o.netloc):
+        o = o._replace(netloc="www." + o.netloc)
+        print(14,o) #debug
+
     for shop in SHOPS:
-        url_re = r"(^https://|^http://)?(www\.)?" + SHOPS[shop][0]
-        match = re.match(url_re, url)
-        if match:
-            if "Amazon" in shop:
-                shorten = re.split(r"/[^/\s]+(?=/dp/[^/\s]+)", match.group(0), 1)
-                result = shorten[0] + shorten[1]
-                print("1:"+result) #debug
-            else:
-                result = match.group(0)
-                print("2:"+result) #debug
-            # normalize to https://...
-            if re.match(r"^https://www\.", result):
-                print("3:"+result) #debug
-                return (result, shop)
-            else:
-                norm_result = r"https://www." + re.split(r"^http://www\.|^www\.", result, 1)[-1]
-                print("4:"+result) #debug
-                return (norm_result, shop)
-    print(1) #debug
-    return None
+        match_path = re.match(SHOPS[shop][1], o.path)
+        match_params = re.match(SHOPS[shop][2], o.params)
+        match_query = re.match(SHOPS[shop][3], o.query)
+        if o.netloc == SHOPS[shop][0] and match_path and match_params and match_query:
+            print(15) #debug
+            match_obj = o._replace(path=match_path.group(0))
+            shorten = re.split(r"/[^/\s]+(?=/dp/[^/\s]+)", match_obj.path, 1)
+            if "Amazon" in shop and len(shorten) > 1:
+                match_obj = match_obj._replace(path=shorten[1])
+            result = urlunparse(match_obj)
+            print(f"01:{result}, {shop}") #debug
+            return (result, shop)
+    print(16) #debug
+    return (None, None)
 
 def _simple_tags(soup: BeautifulSoup, shop: str):
     # tags = {"price": [tag, attrs], "item": [tag, attrs]}
@@ -52,38 +60,52 @@ def _simple_tags(soup: BeautifulSoup, shop: str):
             "item": ["span", {"id":"productTitle"}],
             "price": ["span", {"id":"priceblock_ourprice"}],
         },
-        "B&H": {
+        "B and H": {
             "item": ["h1", {"data-selenium":"productTitle"}],
             "price": ["div", {"data-selenium":"pricingPrice"}],
         },
     }
 
-    item = soup.find(TAGS[shop]["item"][0], attrs=TAGS[shop]["price"][1]).text.strip()
+    item = soup.find(TAGS[shop]["item"][0], attrs=TAGS[shop]["item"][1]).text.strip()
     price_raw = soup.find(TAGS[shop]["price"][0], attrs=TAGS[shop]["price"][1]).text
     return (item, price_raw)
 
 def _bestbuy_tags(soup: BeautifulSoup):
     item_div = soup.find("div", attrs={"class":"sku-title"})
     item = item_div.find("h1").text.strip()
-    price_div = soup.find("div", attrs={"class":"pricing-price pricing-lib-price-8-2136-6 priceView-price "})
+    price_div = soup.find("div", attrs={"class":"priceView-hero-price priceView-customer-price"})
     price_raw = price_div.find("span", attrs={"aria-hidden":"true"}).text.strip()
+    print(price_div) #debug
+    print(price_raw) #debug
     return (item, price_raw)
 
 def scrap_product_data(url: str, shop: str):  
-    headers = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36", "Accept-Encoding":"gzip, deflate, br", "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "DNT":"1","Connection":"close", "Upgrade-Insecure-Requests":"1"}
+    headers = {
+        "accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        "accept-encoding":"gzip, deflate, br",
+        "accept-language":"en-GB,en;q=0.9",
+        "sec-fetch-dest":"document",
+        "sec-fetch-mode":"navigate",
+        "sec-fetch-site":"none",
+        "sec-fetch-user":"?1",
+        "sec-gpc":"1",
+        "Upgrade-Insecure-Requests":"1",
+        "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36",
+    }
     r = requests.get(url, headers=headers)
     soup = BeautifulSoup(r.content, "lxml")
 
-    if SHOPS[shop][1]:
+    if SHOPS[shop][4]:
         if "Amazon" in shop:
-            shop = "Amazon"
-        (item, price_raw) = _simple_tags(soup, shop)
-    else:
-        if shop == "Best Buy":
-            (item, price_raw) = _bestbuy_tags(soup)
+            print("1:amazon") #debug
+            (item, price_raw) = _simple_tags(soup, "Amazon")
+        else:
+            print("2:not amazon") #debug
+            (item, price_raw) = _simple_tags(soup, shop)
+    elif shop == "Best Buy":
+        print("3:best buy") #debug
+        (item, price_raw) = _bestbuy_tags(soup)
     price_rm_sep = re.sub(r"[,\.](?=\d{3})", "", price_raw)
     price_decimal = re.sub(r",(?=\d{2}\D)", ".", price_rm_sep)
     price = float(re.search(r"[\d\.]+", price_decimal).group(0))
-    print(f"{item}, {len(item)}")
-    print(f"{price}, {len(price)}")
     return (item, price, datetime.now().strftime("%Y-%m-%d"))
