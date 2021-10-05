@@ -22,6 +22,16 @@ export default function Content() {
     });
   };
 
+  function getUserItems() {
+    axios.get(
+
+    ).then(res => {}).catch(err => {
+      if (err != undefined) {
+        console.log(err.message);
+      }
+    });
+  };
+
   useEffect(() => {
     getName();
     console.log("useEffect count");

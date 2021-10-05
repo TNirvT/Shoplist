@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 
 export default function ShopAddItem({userName}) {
-  const [showAdd, setShowAdd] = useState(false);
   const [message, setMessage] = useState("");
   const [newItem, setNewItem] = useState({
     url:"",
@@ -10,8 +9,7 @@ export default function ShopAddItem({userName}) {
     alias:"",
     price:0,
     date:"",
-    brand:"",
-    type:""
+    shop:"",
   });
 
   function userLogout() {
@@ -40,7 +38,8 @@ export default function ShopAddItem({userName}) {
         url: res.data.url_norm,
         item: res.data.item,
         price: res.data.price,
-        date: res.data.date
+        date: res.data.date,
+        shop: res.data.shop,
       });
       setMessage(`Data received for ${res.data.item}: Latest Price ${res.data.price}`);
     }).catch(err => {

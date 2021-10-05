@@ -27,22 +27,17 @@ def url_parser(url: str):
     # normalize to https://www...
     if re.search(r"//(?=[^/\s]+/[^/\s]+)", url):
         o = urlparse(url, allow_fragments=False)
-        print(11,o) #debug
     else:
         o = urlparse("//" + url)
-        print(12,o) #debug
     o = o._replace(scheme="https")
-    print(13,o) #debug
     if not re.match(r"^www\.", o.netloc):
         o = o._replace(netloc="www." + o.netloc)
-        print(14,o) #debug
 
     for shop in SHOPS:
         match_path = re.match(SHOPS[shop][1], o.path)
         match_params = re.match(SHOPS[shop][2], o.params)
         match_query = re.match(SHOPS[shop][3], o.query)
         if o.netloc == SHOPS[shop][0] and match_path and match_params and match_query:
-            print(15) #debug
             match_obj = o._replace(path=match_path.group(0))
             shorten = re.split(r"/[^/\s]+(?=/dp/[^/\s]+)", match_obj.path, 1)
             if "Amazon" in shop and len(shorten) > 1:
@@ -50,7 +45,6 @@ def url_parser(url: str):
             result = urlunparse(match_obj)
             print(f"01:{result}, {shop}") #debug
             return (result, shop)
-    print(16) #debug
     return (None, None)
 
 def _simple_tags(soup: BeautifulSoup, shop: str):
@@ -105,7 +99,9 @@ def scrap_product_data(url: str, shop: str):
     elif shop == "Best Buy":
         print("3:best buy") #debug
         (item, price_raw) = _bestbuy_tags(soup)
-    price_rm_sep = re.sub(r"[,\.](?=\d{3})", "", price_raw)
-    price_decimal = re.sub(r",(?=\d{2}\D)", ".", price_rm_sep)
+    # remove the thousands separator
+    price_rmv_sep = re.sub(r"[,\.](?=\d{3})", "", price_raw)
+    # change decimal separator to "."
+    price_decimal = re.sub(r",(?=\d{2}\D)", ".", price_rmv_sep)
     price = float(re.search(r"[\d\.]+", price_decimal).group(0))
     return (item, price, datetime.now().strftime("%Y-%m-%d"))

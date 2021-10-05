@@ -119,11 +119,13 @@ def user_deletion():
 @views.route("/content", methods=["GET"])
 def content():
     if not validate_user(): return redirect(url_for("views.index"))
+    
     return render_template("content.html")
 
 @views.route("/get_name", methods=["GET"])
 def get_name():
     if not validate_user(): return redirect(url_for("views.index"))
+
     cur = cnx.cursor()
     cur.execute(
         "SELECT user_name FROM users WHERE id = %s",
@@ -136,6 +138,7 @@ def get_name():
 @views.route("/get_product_data", methods=["GET"])
 def get_product():
     if not validate_user(): return redirect(url_for("views.index"))
+
     (url_norm, shop) = url_parser(request.args.get("url"))
     if not url_norm:
         return jsonify({
@@ -149,6 +152,7 @@ def get_product():
             "item": get_db_product(source_id),
             "price": result_db[0],
             "date": result_db[1],
+            "shop": result_db[2],
         })
     result = scrap_product_data(url_norm, shop)
     return jsonify({
@@ -156,6 +160,7 @@ def get_product():
         "item": result[0],
         "price": result[1],
         "date": result[2],
+        "shop": shop,
     })
 
 @views.route("/add_item", methods=["PUT"])
@@ -173,7 +178,7 @@ def add_item():
             })
         else:
             add_product_w_existing_source(current_user, r["item"], r["alias"], sid)
-            return
+            return jsonify({ "added_item": True })
     add_product(r["url"], current_user, r["item"], r["alias"], r["date"], r["price"])
     print("new row added") #debug
     return jsonify({ "added_item": True })
@@ -181,3 +186,9 @@ def add_item():
 @views.route("/add_source", methods=["PUT"])
 def add_source_url():
     return
+
+@views.route("/price_update", methods=["PUT"])
+def price_history_update():
+    from .price_update import update_all
+    update_all()
+    return None

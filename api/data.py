@@ -10,7 +10,7 @@ def check_existing_source(url):
         WHERE s.url = %s""",
         (url,)
     )
-    result = cur.fetchone() and cur.fetchone()
+    result = cur.fetchone()
     cur.close()
     return result
 
@@ -24,13 +24,33 @@ def get_db_product(product_id):
 def get_db_latest_price(source_id):
     cur = cnx.cursor()
     cur.execute(
-        """SELECT price, date FROM price_history WHERE source_id = %s
+        """SELECT price, date, shop_id FROM price_history WHERE source_id = %s
         ORDER BY date DESC LIMIT 1""",
         (source_id,)
     )
     result = cur.fetchone()
     cur.close()
     return result
+
+def get_db_shop(shop_id: int):
+    cur = cnx.cursor()
+    cur.execute("SELECT shop FROM SHOPS WHERE id = %s", (shop_id))
+    shop = cur.fetchone()[0]
+    cur.close()
+    return shop
+
+def get_db_shopid(shop: str):
+    cur = cnx.cursor()
+    cur.execute("SELECT id FROM SHOPS WHERE shop = %s", (shop))
+    shop_id = cur.fetchone()[0]
+    cur.close()
+    return shop_id
+
+def get_db_user_items(user_id):
+    cur = cnx.cursor()
+    cur.execute("SELECT FROM WHERE", (user_id,))
+    cur.close()
+    return
 
 def add_product(url, user_id, item_name, alias, date_now, price):
     cur = cnx.cursor()
@@ -70,4 +90,9 @@ def add_product_w_existing_source(user_id, item_name, alias, source_id):
         VALUES (LAST_INSERT_ID(), %s)""",
         (source_id,)
     )
+    cur.close()
+
+def add_price_data(source_id, date_today, price):
+    cur = cnx.cursor()
+    cur.execute()
     cur.close()
