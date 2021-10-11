@@ -16,8 +16,10 @@ def update_all():
     for source in sources:
         shop = get_db_shop(source[2])
         (item, price, date_today) = scrap_product_data(source[1], shop)
-        latest_price = get_db_latest_price(source[0])
-        if latest_price[1] == date_today:
+        latest_price_date = datetime.strftime(get_db_latest_price(source[0])[1], "%Y-%m-%d")
+        print(source, "||", latest_price_date, "||", date_today) #debug
+        if latest_price_date == date_today:
+            print("running ==") #debug
             cur.execute(
                 """UPDATE price_history
                 SET price = %s
@@ -25,9 +27,12 @@ def update_all():
                 (price, source[0], date_today,)
             )
         else:
+            print("running else") #debug
             cur.execute(
                 """INSERT INTO price_history (source_id, date, price)
-                VALUES (%s, %s, %s, %s)""",
+                VALUES (%s, %s, %s)""",
                 (source[0], date_today, price,)
             )
+        cnx.commit()
+        print("committed") #debug
     cur.close()

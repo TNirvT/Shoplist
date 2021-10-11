@@ -191,4 +191,4 @@ def add_source_url():
 def price_history_update():
     from .price_update import update_all
     update_all()
-    return None
+    return jsonify({ "update_sucess": True })

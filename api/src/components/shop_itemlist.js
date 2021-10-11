@@ -8,7 +8,7 @@ export default function ShopItemList() {
   function price_update() {
     axios.put("/price_update",
     ).then(res => {
-      console.log("update was ran");
+      console.log("updated!");
     }).catch(err => {
       if (err != undefined) {
         setMessage(err.message);
@@ -20,7 +20,7 @@ export default function ShopItemList() {
     <React.Fragment>
     <h1>Item List</h1>
     <ul>{listItems}</ul>
-    <button onClick={price_update}>Price update</button>
+    <button onClick={price_update}>Price update(All)</button>
     </React.Fragment>
   )
 }

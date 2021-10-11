@@ -24,11 +24,13 @@ def get_db_product(product_id):
 def get_db_latest_price(source_id):
     cur = cnx.cursor()
     cur.execute(
-        """SELECT price, date, shop_id FROM price_history WHERE source_id = %s
+        """SELECT price, date FROM price_history WHERE source_id = %s
         ORDER BY date DESC LIMIT 1""",
         (source_id,)
     )
     result = cur.fetchone()
+    print(result[0], type(result[0])) #debug
+    print(result[1], type(result[1])) #debug
     cur.close()
     return result
 
