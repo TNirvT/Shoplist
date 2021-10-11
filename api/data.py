@@ -34,30 +34,30 @@ def get_db_latest_price(source_id):
 
 def get_db_shop(shop_id: int):
     cur = cnx.cursor()
-    cur.execute("SELECT shop FROM SHOPS WHERE id = %s", (shop_id))
+    cur.execute("SELECT shop FROM shops WHERE id = %s", (shop_id,))
     shop = cur.fetchone()[0]
     cur.close()
     return shop
 
 def get_db_shopid(shop: str):
     cur = cnx.cursor()
-    cur.execute("SELECT id FROM SHOPS WHERE shop = %s", (shop))
+    cur.execute("SELECT id FROM shops WHERE shop = %s", (shop,))
     shop_id = cur.fetchone()[0]
     cur.close()
     return shop_id
 
 def get_db_user_items(user_id):
     cur = cnx.cursor()
-    cur.execute("SELECT FROM WHERE", (user_id,))
+    # cur.execute("SELECT FROM WHERE", (user_id,))
     cur.close()
     return
 
-def add_product(url, user_id, item_name, alias, date_now, price):
+def add_product(url, shop_id, user_id, item_name, alias, date_now, price):
     cur = cnx.cursor()
     cur.execute(
-        """INSERT INTO sources (url)
-        VALUES (%s)""",
-        (url,)
+        """INSERT INTO sources (url, shop_id)
+        VALUES (%s, %s)""",
+        (url, shop_id,)
     )
     source_id = cur.lastrowid
     cur.execute(

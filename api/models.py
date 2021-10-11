@@ -27,7 +27,7 @@ TABLES["sources"] = (
     """CREATE TABLE IF NOT EXISTS sources (
         id INT(10) AUTO_INCREMENT,
         url VARCHAR(500) NOT NULL UNIQUE,
-        shop_id INT(10),
+        shop_id INT(10) NOT NULL,
         PRIMARY KEY (id),
         FOREIGN KEY (shop_id) REFERENCES shops(id)
     ) ENGINE=InnoDB"""
@@ -63,9 +63,8 @@ TABLES["price_history"] = (
     """CREATE TABLE IF NOT EXISTS price_history (
         source_id INT(10),
         date DATE,
-        shop_id INT(10),
         price DEC(10,2) NOT NULL,
         PRIMARY KEY (source_id, date),
-        FOREIGN KEY (source_id, shop_id) REFERENCES sources(id, shop_id)
+        FOREIGN KEY (source_id) REFERENCES sources(id)
     ) ENGINE=InnoDB"""
 )

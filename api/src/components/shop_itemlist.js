@@ -3,7 +3,7 @@ import axios from "axios";
 
 export default function ShopItemList() {
   const [message, setMessage] = useState("");
-  const listItems;
+  const listItems = 0;
 
   function price_update() {
     axios.put("/price_update",

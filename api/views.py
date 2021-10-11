@@ -179,7 +179,7 @@ def add_item():
         else:
             add_product_w_existing_source(current_user, r["item"], r["alias"], sid)
             return jsonify({ "added_item": True })
-    add_product(r["url"], current_user, r["item"], r["alias"], r["date"], r["price"])
+    add_product(r["url"], get_db_shopid(r["shop"]), current_user, r["item"], r["alias"], r["date"], r["price"])
     print("new row added") #debug
     return jsonify({ "added_item": True })
 
