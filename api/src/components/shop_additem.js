@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-export default function ShopAddItem({userName}) {
+export default function ShopAddItem() {
   const [message, setMessage] = useState("");
   const [newItem, setNewItem] = useState({
     url:"",
@@ -11,17 +11,6 @@ export default function ShopAddItem({userName}) {
     date:"",
     shop:"",
   });
-
-  function userLogout() {
-    axios.post("/logout",
-    ).then(res => {
-      window.location = "/";
-    }).catch(err => {
-      if (err != undefined) {
-        setMessage(err.message);
-      };
-    });
-  };
 
   function get_product_data() {
     axios.get("/get_product_data", {
@@ -63,9 +52,6 @@ export default function ShopAddItem({userName}) {
 
   return (
     <React.Fragment>
-    <h1>ShopList - Track online shopping items</h1>
-    <h2>Welcome back, {userName}!</h2>
-    <button onClick={userLogout}>Logout</button><br/>
     <input
       type="text"
       id="product_url"

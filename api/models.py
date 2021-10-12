@@ -16,8 +16,8 @@ TABLES["products"] = (
         user_id INT(10),
         item_name VARCHAR(300) NOT NULL,
         user_alias VARCHAR(30) DEFAULT '',
-        brand VARCHAR(30) DEFAULT '',
-        type VARCHAR(30) DEFAULT '',
+        brand VARCHAR(30),
+        type VARCHAR(30),
         PRIMARY KEY (id),
         FOREIGN KEY (user_id) REFERENCES users(id)
     ) ENGINE=InnoDB"""

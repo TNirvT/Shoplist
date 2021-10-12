@@ -6,7 +6,7 @@ export default function ShopItemList() {
   const listItems = 0;
 
   function price_update() {
-    axios.put("/price_update",
+    axios.put("/user_price_history_update",
     ).then(res => {
       console.log("updated!");
     }).catch(err => {
@@ -20,7 +20,7 @@ export default function ShopItemList() {
     <React.Fragment>
     <h1>Item List</h1>
     <ul>{listItems}</ul>
-    <button onClick={price_update}>Price update(All)</button>
+    <button onClick={price_update}>Price update(user's items)</button>
     </React.Fragment>
   )
 }

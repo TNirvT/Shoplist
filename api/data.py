@@ -50,9 +50,17 @@ def get_db_shopid(shop: str):
 
 def get_db_user_items(user_id):
     cur = cnx.cursor()
-    # cur.execute("SELECT FROM WHERE", (user_id,))
+    cur.execute(
+        """SELECT s.id, s.url, s.shop_id
+        FROM sources s
+        JOIN product_source_links l ON s.id = l.source_id
+        JOIN products p ON l.product_id = p.id
+        WHERE p.user_id = %s""",
+        (user_id,)
+    )
+    sources = cur.fetchall() # sources arr=[(int, str, int), (int, str, int), ...]
     cur.close()
-    return
+    return sources
 
 def add_product(url, shop_id, user_id, item_name, alias, date_now, price):
     cur = cnx.cursor()
@@ -94,7 +102,23 @@ def add_product_w_existing_source(user_id, item_name, alias, source_id):
     )
     cur.close()
 
-def add_price_data(source_id, date_today, price):
+def update_today_price(price, source_id, date_today):
     cur = cnx.cursor()
-    cur.execute()
+    cur.execute(
+        """UPDATE price_history
+        SET price = %s
+        WHERE source_id = %s  AND date = %s""",
+        (price, source_id, date_today,)
+    )
+    cnx.commit()
+    cur.close()
+
+def add_today_price(price, source_id, date_today):
+    cur = cnx.cursor()
+    cur.execute(
+        """INSERT INTO price_history (source_id, date, price)
+        VALUES (%s, %s, %s)""",
+        (source_id, date_today, price,)
+    )
+    cnx.commit()
     cur.close()

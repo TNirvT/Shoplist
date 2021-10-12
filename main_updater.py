@@ -1,14 +1,22 @@
 from datetime import datetime
-from . import cnx
-from .config import db_name
-from .shoplist import scrap_product_data
-from .data import get_db_latest_price, get_db_shop
+from pathlib import Path
+import json
+import mysql.connector as connector
 
-def update_one():
-    return
+from api.shoplist import scrap_product_data
+from api.data import get_db_latest_price, get_db_shop
+from api.config import db_credential, db_name
+
+# db_credential_path = Path.cwd() / ".secret" / "db_credential.json"
+# with open(db_credential_path) as f:
+#     db_credential = json.load(f)
+# db_name = "shoplist_db"
+
+cnx_updater = connector.connect(**db_credential)
+cnx_updater.autocommit = False
 
 def update_all():
-    cur = cnx.cursor()
+    cur = cnx_updater.cursor()
     cur.execute(f"USE {db_name}")
     cur.execute("SELECT id, url, shop_id FROM sources")
     sources = cur.fetchall() # sources arr=[(int, str, int), (int, str, int), ...]
@@ -33,6 +41,6 @@ def update_all():
                 VALUES (%s, %s, %s)""",
                 (source[0], date_today, price,)
             )
-        cnx.commit()
+        cnx_updater.commit()
         print("committed") #debug
     cur.close()

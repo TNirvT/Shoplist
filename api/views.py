@@ -187,8 +187,17 @@ def add_item():
 def add_source_url():
     return
 
-@views.route("/price_update", methods=["PUT"])
-def price_history_update():
-    from .price_update import update_all
-    update_all()
+@views.route("/user_price_history_update", methods=["PUT"])
+def user_price_history_update():
+    current_user = validate_user()
+    if not current_user: return redirect(url_for("views.index"))
+    sources = get_db_user_items(current_user)
+    for source in sources:
+        shop = get_db_shop(source[2])
+        item, price, date_today = scrap_product_data(source[1], shop)
+        latest_price_date = datetime.strftime(get_db_latest_price(source[0])[1], "%Y-%m-%d")
+        if latest_price_date == date_today:
+            update_today_price(price, source[0],date_today)
+        else:
+            add_today_price(price, source[0], date_today)
     return jsonify({ "update_sucess": True })
