@@ -18,7 +18,7 @@ export default function ShopAddItem() {
         url: newItem.url,
       },
     }).then(res => {
-      if ("error" in res.data) {
+      if (res.data.hasOwnProperty("error")) {
         setMessage(res.data.error);
         return
       };
@@ -39,10 +39,26 @@ export default function ShopAddItem() {
   };
 
   function addItemToDB() {
+    if (!newItem.url) {
+      console.log("Error. URL is empty");
+      setMessage("Error. URL is empty");
+      return
+    } else if (newItem.item === "Can't reach the url") {
+      console.log("Error. Can't reach the url");
+      setMessage("Error. Can't reach the url");
+      return
+    };
+
     axios.put("/add_item", newItem
     ).then(res => {
-      console.log(`Item added`);
-      setMessage("A new item is added to database");
+      if (res.data.hasOwnProperty("error")) {
+        console.log(res.data.error);
+        setMessage(res.data.error);
+        return
+      } else if (res.data.hasOwnProperty("added_item")) {
+        console.log(`Item added`);
+        setMessage("The item is added to database");
+      };
     }).catch(err => {
       if (err != undefined) {
         console.log(err.message);

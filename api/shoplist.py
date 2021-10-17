@@ -43,9 +43,8 @@ def url_parser(url: str):
             if "Amazon" in shop and len(shorten) > 1:
                 match_obj = match_obj._replace(path=shorten[1])
             result = urlunparse(match_obj)
-            print(f"01:{result}, {shop}") #debug
-            return (result, shop)
-    return (None, None)
+            return result, shop
+    return None, None
 
 def _simple_tags(soup: BeautifulSoup, shop: str):
     # tags = {"price": [tag, attrs], "item": [tag, attrs]}
@@ -62,16 +61,14 @@ def _simple_tags(soup: BeautifulSoup, shop: str):
 
     item = soup.find(TAGS[shop]["item"][0], attrs=TAGS[shop]["item"][1]).text.strip()
     price_raw = soup.find(TAGS[shop]["price"][0], attrs=TAGS[shop]["price"][1]).text
-    return (item, price_raw)
+    return item, price_raw
 
 def _bestbuy_tags(soup: BeautifulSoup):
     item_div = soup.find("div", attrs={"class":"sku-title"})
     item = item_div.find("h1").text.strip()
     price_div = soup.find("div", attrs={"class":"priceView-hero-price priceView-customer-price"})
     price_raw = price_div.find("span", attrs={"aria-hidden":"true"}).text.strip()
-    print(price_div) #debug
-    print(price_raw) #debug
-    return (item, price_raw)
+    return item, price_raw
 
 def scrap_product_data(url: str, shop: str):  
     headers = {
@@ -87,21 +84,28 @@ def scrap_product_data(url: str, shop: str):
         "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36",
     }
     r = requests.get(url, headers=headers)
+    
+    # in case, error when reaching the url
+    if r.status_code > 399:
+        return "Can't reach the url", None, None
+
     soup = BeautifulSoup(r.content, "lxml")
 
     if SHOPS[shop][4]:
         if "Amazon" in shop:
-            print("1:amazon") #debug
-            (item, price_raw) = _simple_tags(soup, "Amazon")
+            item, price_raw = _simple_tags(soup, "Amazon")
         else:
-            print("2:not amazon") #debug
-            (item, price_raw) = _simple_tags(soup, shop)
+            item, price_raw = _simple_tags(soup, shop)
     elif shop == "Best Buy":
-        print("3:best buy") #debug
-        (item, price_raw) = _bestbuy_tags(soup)
+        item, price_raw = _bestbuy_tags(soup)
+    
+    # in case, out of stock
+    if not price_raw:
+        return item, None, datetime.now().strftime("%Y-%m-%d")
+
     # remove the thousands separator
     price_rmv_sep = re.sub(r"[,\.](?=\d{3})", "", price_raw)
     # change decimal separator to "."
     price_decimal = re.sub(r",(?=\d{2}\D)", ".", price_rmv_sep)
     price = float(re.search(r"[\d\.]+", price_decimal).group(0))
-    return (item, price, datetime.now().strftime("%Y-%m-%d"))
+    return item, price, datetime.now().strftime("%Y-%m-%d")

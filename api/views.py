@@ -139,7 +139,7 @@ def get_name():
 def get_product():
     if not validate_user(): return redirect(url_for("views.index"))
 
-    (url_norm, shop) = url_parser(request.args.get("url"))
+    url_norm, shop = url_parser(request.args.get("url"))
     if not url_norm:
         return jsonify({
             "error": "Invalid URL",
@@ -168,24 +168,30 @@ def add_item():
     current_user = validate_user()
     if not current_user: return redirect(url_for("views.index"))
     r = request.get_json()
+    if r["item"] == "Can't reach the url":
+        return jsonify({
+            "error": f"Error when reaching the url({r['url']})",
+        })
+    # elif r["item"] == "Can't reach the url":
+    #     return jsonify({
+    #         "error": f"Error when reaching the url({r['url']})",
+    #     })
     product_linked_to_url = check_existing_source(r["url"])
     if product_linked_to_url:
-        (pid, uid, item, sid) = product_linked_to_url
+        pid, uid, item, sid = product_linked_to_url
         if uid == current_user:
             return jsonify({
-                "added_item": False,
                 "error": f"{item} already in record ({pid})",
             })
         else:
             add_product_w_existing_source(current_user, r["item"], r["alias"], sid)
             return jsonify({ "added_item": True })
     add_product(r["url"], get_db_shopid(r["shop"]), current_user, r["item"], r["alias"], r["date"], r["price"])
-    print("new row added") #debug
     return jsonify({ "added_item": True })
 
-@views.route("/add_source", methods=["PUT"])
-def add_source_url():
-    return
+# @views.route("/add_source", methods=["PUT"])
+# def add_source_url():
+#     return
 
 @views.route("/user_price_history_update", methods=["PUT"])
 def user_price_history_update():

@@ -63,7 +63,7 @@ TABLES["price_history"] = (
     """CREATE TABLE IF NOT EXISTS price_history (
         source_id INT(10),
         date DATE,
-        price DEC(10,2) NOT NULL,
+        price DEC(10,2),
         PRIMARY KEY (source_id, date),
         FOREIGN KEY (source_id) REFERENCES sources(id)
     ) ENGINE=InnoDB"""

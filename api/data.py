@@ -29,8 +29,6 @@ def get_db_latest_price(source_id):
         (source_id,)
     )
     result = cur.fetchone()
-    print(result[0], type(result[0])) #debug
-    print(result[1], type(result[1])) #debug
     cur.close()
     return result
 
