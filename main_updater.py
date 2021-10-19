@@ -1,6 +1,7 @@
 from datetime import datetime
-from pathlib import Path
-import json
+# from pathlib import Path
+# import json
+import time
 import mysql.connector as connector
 
 from api.shoplist import scrap_product_data
@@ -44,3 +45,8 @@ def update_all():
         cnx_updater.commit()
         print("committed") #debug
     cur.close()
+
+while True:
+    update_all()
+    print(f"Update sleeps: {datetime.now().strftime('%Y-%m-%d %I:%M %p')}")
+    time.sleep(6*60*60)

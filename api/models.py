@@ -16,8 +16,6 @@ TABLES["products"] = (
         user_id INT(10),
         item_name VARCHAR(300) NOT NULL,
         user_alias VARCHAR(30) DEFAULT '',
-        brand VARCHAR(30),
-        type VARCHAR(30),
         PRIMARY KEY (id),
         FOREIGN KEY (user_id) REFERENCES users(id)
     ) ENGINE=InnoDB"""
@@ -40,14 +38,6 @@ TABLES["product_source_links"] = (
         PRIMARY KEY (product_id, source_id),
         FOREIGN KEY (product_id) REFERENCES products(id),
         FOREIGN KEY (source_id) REFERENCES sources(id)
-    ) ENGINE=InnoDB"""
-)
-
-TABLES["product_types"] = (
-    """CREATE TABLE IF NOT EXISTS product_types (
-        id INT(10),
-        type VARCHAR(30) NOT NULL,
-        PRIMARY KEY (id)
     ) ENGINE=InnoDB"""
 )
 
