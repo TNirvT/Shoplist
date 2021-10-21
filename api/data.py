@@ -61,16 +61,19 @@ def get_db_user_items(user_id):
     return sources
 
 def get_db_user_items_detailed(user_id):
-    cur = cnx.cursor()
+    cur = cnx.cursor(dictionary=True)
     cur.execute(
-        """SELECT p.id, p.item_name, p.user_alias, s.id, s.url, s.shop_id
+        """SELECT p.id, p.item_name, p.user_alias, l.source_id, s.url, s.shop_id
         FROM sources s
         JOIN product_source_links l ON s.id = l.source_id
         JOIN products p ON l.product_id = p.id
         WHERE p.user_id = %s""",
         (user_id,)
     )
-    sources = cur.fetchall() # sources arr=[(int, str, int), (int, str, int), ...]
+    sources = cur.fetchall()
+    # sources arr=[
+    #     {'id':int, 'item_name':str, 'user_alias':str, 'source_id', 'url':str, 'shop_id':int},
+    # ...]
     cur.close()
     return sources
 

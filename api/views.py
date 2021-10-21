@@ -207,3 +207,10 @@ def user_price_history_update():
         else:
             add_today_price(price, source[0], date_today)
     return jsonify({ "update_sucess": True })
+
+@views.route("/list_user_items", methods=["GET"])
+def list_user_items():
+    current_user = validate_user()
+    if not current_user: return redirect(url_for("views.index"))
+    results = get_db_user_items_detailed(current_user)
+    return jsonify(results)

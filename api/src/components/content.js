@@ -46,7 +46,7 @@ export default function Content() {
   useEffect(() => {
     getName();
     console.log("useEffect count");
-  }, [])
+  }, []);
 
   return (
     <div>
