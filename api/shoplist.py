@@ -59,8 +59,10 @@ def _simple_tags(soup: BeautifulSoup, shop: str):
         },
     }
 
-    item = soup.find(TAGS[shop]["item"][0], attrs=TAGS[shop]["item"][1]).text.strip()
-    price_raw = soup.find(TAGS[shop]["price"][0], attrs=TAGS[shop]["price"][1]).text
+    item = soup.find(TAGS[shop]["item"][0], attrs=TAGS[shop]["item"][1])
+    if item: item = item.text.strip()
+    price_raw = soup.find(TAGS[shop]["price"][0], attrs=TAGS[shop]["price"][1])
+    if price_raw: price_raw = price_raw.text
     return item, price_raw
 
 def _bestbuy_tags(soup: BeautifulSoup):
