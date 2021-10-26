@@ -5,7 +5,7 @@ from datetime import datetime
 
 from bs4 import BeautifulSoup
 
-# [shop domain: str, params, query: regex str, simple tags: boolean]
+# [shop domain: str, path, params, query: regex str, simple tags: boolean]
 SHOPS = {
     "Amazon US": ["www.amazon.com", r"(/[^/\s]+)?/dp/[^/\s]+", "", "", True],
     "Amazon Japan": ["www.amazon.co.jp", r"(/[^/\s]+)?/dp/[^/\s]+", "", "", True],
@@ -38,7 +38,7 @@ def url_parser(url: str):
         match_params = re.match(SHOPS[shop][2], o.params)
         match_query = re.match(SHOPS[shop][3], o.query)
         if o.netloc == SHOPS[shop][0] and match_path and match_params and match_query:
-            match_obj = o._replace(path=match_path.group(0))
+            match_obj = o._replace(path=match_path.group(0), params=match_params.group(0), query=match_query.group(0))
             shorten = re.split(r"/[^/\s]+(?=/dp/[^/\s]+)", match_obj.path, 1)
             if "Amazon" in shop and len(shorten) > 1:
                 match_obj = match_obj._replace(path=shorten[1])

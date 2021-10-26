@@ -25,7 +25,7 @@ export default function ShopItemList() {
     ).then(res => {
       let userItems = res.data;
       let arr = userItems.map((userItem) =>
-      <li key={userItem.source_id.toString()}>
+        <li key={userItem.source_id.toString()}>
           {userItem.item_name.substring(0,35)}
           {userItem.item_name.length > 35 && "..."}
           {" : $"}
