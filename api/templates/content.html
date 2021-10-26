@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Shopping List - Content{% endblock%}
-{% block body%}
-Content
-{% endblock%}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}"
+{% endblock %}
+{% block body %}
+<h1>Content</h1>
+{% endblock %}
 {% block body_script %}
 <div id="root"></div>
 <script src="{{url_for('static', filename='react_content.bundle.js')}}"></script>
