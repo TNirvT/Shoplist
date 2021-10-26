@@ -28,7 +28,6 @@ export default function ShopItemList() {
           {userItem.price}
         </li>
       );
-      console.log(userItems);
       setListItems(arr);
     }).catch(err => {
       if (err != undefined) {

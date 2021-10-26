@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+# import decimal
 
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -213,4 +214,7 @@ def list_user_items():
     current_user = validate_user()
     if not current_user: return redirect(url_for("views.index"))
     results = get_db_user_items_detailed(current_user)
+    for result in results:
+        result["latest_on"] = datetime.strftime(result["latest_on"], "%Y-%m-%d")
+        result["price"] = float(result["price"])
     return jsonify(results)
