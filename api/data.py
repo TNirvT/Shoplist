@@ -1,3 +1,4 @@
+from datetime import datetime
 from . import cnx
 
 def check_existing_source(url):
@@ -63,7 +64,7 @@ def get_db_user_items(user_id):
 def get_db_user_items_detailed(user_id):
     cur = cnx.cursor(dictionary=True)
     cur.execute(
-        """SELECT p.id, p.item_name, p.user_alias, l.source_id, s.url, s.shop_id, ph.latest_on, ph_.price
+        """SELECT p.id product_id, p.item_name, p.user_alias, l.source_id, s.url, s.shop_id, ph.latest_on, ph_.price
         FROM sources s
         JOIN product_source_links l ON s.id = l.source_id
         JOIN products p ON l.product_id = p.id
@@ -87,26 +88,53 @@ def get_db_user_items_detailed(user_id):
 def get_db_user_items_history(user_id):
     cur = cnx.cursor(dictionary=True)
     cur.execute(
-        """SELECT p.id, p.item_name, p.user_alias, l.source_id, s.url, s.shop_id, ph.latest_on, ph_.price
+        """SELECT p.id product_id, p.item_name, p.user_alias, l.source_id, s.url, s.shop_id, ph.date, ph.price
         FROM sources s
         JOIN product_source_links l ON s.id = l.source_id
         JOIN products p ON l.product_id = p.id
-        JOIN (
-            SELECT source_id, MAX(date) latest_on
-            FROM price_history
-            GROUP BY source_id
-        ) ph ON ph.source_id = s.id
-        JOIN price_history ph_ ON ph_.source_id = ph.source_id AND ph_.date = ph.latest_on
+        JOIN price_history ph ON ph.source_id = s.id
         WHERE p.user_id = %s""",
         (user_id,)
     )
     sources = cur.fetchall()
     # print(*sources, sep="\n") #debug
     # sources arr=[
-    #     {'id':int, 'item_name':str, 'user_alias':str, 'source_id', 'url':str, 'shop_id':int},
+    #     {'product_id':int, 'item_name':str, 'user_alias':str, 'source_id', 'url':str, 'shop_id':int, 'date':datetime, 'price':decimal},
     # ...]
     cur.close()
-    return sources
+
+    # conver to a format:
+    # [
+    #   {
+    #       'source_id': 1,
+    #       'item_name': 'name',
+    #       'user_alias': 'name',
+    #       'dates': [d, d, ...],
+    #       'prices': [$, $, ...]
+    #   },
+    #   {
+    #       'source_id': 2,...
+    #   },
+    # ]
+    result = []
+    for source in sources:
+        for i in range(len(result)):
+            if result[i]["source_id"] == source["source_id"]:
+                result[i]["dates"].append(datetime.strftime(source["date"], "%Y-%m-%d"))
+                result[i]["price"].append(result["price"] and float(result["price"]))
+                break
+            elif i == len(result) - 1:
+                source_dictn = {
+                    "source_id": source["source_id"],
+                    "item_name": source["item_name"],
+                    "user_alias": source["user_alias"],
+                    "dates": [],
+                    "prices": [],
+                }
+                source_dictn["dates"].append(datetime.strftime(source["date"], "%Y-%m-%d"))
+                source_dictn["price"].append(result["price"] and float(result["price"]))
+                result.append(source_dictn)
+    return result
 
 def add_product(url, shop_id, user_id, item_name, alias, date_now, price):
     cur = cnx.cursor()

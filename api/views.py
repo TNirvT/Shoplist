@@ -216,5 +216,5 @@ def list_user_items():
     results = get_db_user_items_detailed(current_user)
     for result in results:
         result["latest_on"] = datetime.strftime(result["latest_on"], "%Y-%m-%d")
-        result["price"] = float(result["price"])
+        result["price"] = result["price"] and float(result["price"])
     return jsonify(results)

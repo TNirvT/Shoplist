@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Line } from "react-chartjs-2";
 
 export default function ShopItemList() {
   const [message, setMessage] = useState("");
@@ -40,6 +41,20 @@ export default function ShopItemList() {
       };
     });
   };
+
+  function datesThisMonth() {
+    let datesArr = [];
+    const today = new Date();
+    let iterDate = new Date();
+    iterDate.setDate(iterDate.getDate()-29);
+    while (iterDate <= today) {
+      const indexDate = `${iterDate.getFullYear()}-${iterDate.getMonth()+1}-${iterDate.getDate()}`;
+      datesArr.push(indexDate);
+      iterDate.setDate(iterDate.getDate()+1);
+    }
+    console.log(datesArr);
+    return datesArr
+  }
 
   useEffect(() => {
     listUserItems();
