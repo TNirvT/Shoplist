@@ -21,6 +21,14 @@ TABLES["products"] = (
     ) ENGINE=InnoDB"""
 )
 
+TABLES["shops"] = (
+    """CREATE TABLE IF NOT EXISTS shops (
+        id INT(10) AUTO_INCREMENT,
+        shop VARCHAR(30) NOT NULL,
+        PRIMARY KEY (id)
+    ) ENGINE=InnoDB"""
+)
+
 TABLES["sources"] = (
     """CREATE TABLE IF NOT EXISTS sources (
         id INT(10) AUTO_INCREMENT,
@@ -38,14 +46,6 @@ TABLES["product_source_links"] = (
         PRIMARY KEY (product_id, source_id),
         FOREIGN KEY (product_id) REFERENCES products(id),
         FOREIGN KEY (source_id) REFERENCES sources(id)
-    ) ENGINE=InnoDB"""
-)
-
-TABLES["shops"] = (
-    """CREATE TABLE IF NOT EXISTS shops (
-        id INT(10) AUTO_INCREMENT,
-        shop VARCHAR(30) NOT NULL,
-        PRIMARY KEY (id)
     ) ENGINE=InnoDB"""
 )
 
