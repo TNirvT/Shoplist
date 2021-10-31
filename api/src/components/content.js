@@ -14,7 +14,7 @@ export default function Content() {
     axios.post("/logout").then(res => {
       window.location = "/";
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         setMessage(err.message);
       };
     });
@@ -26,7 +26,7 @@ export default function Content() {
     }).then(res => {
       setScreenName(res.data.user_name);
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         console.log(err.message);
       }
     });
@@ -36,7 +36,7 @@ export default function Content() {
     axios.get(
 
     ).then(res => {}).catch(err => {
-      if (err != undefined) {
+      if (err) {
         console.log(err.message);
       }
     });

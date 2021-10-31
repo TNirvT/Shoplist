@@ -50,7 +50,7 @@ export default function UserCreation() {
         setValidateAll({...validateAll, userEmail: true});
       };
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         setEmailMessage(err.message);
       }
     });
@@ -92,7 +92,7 @@ export default function UserCreation() {
       setMessage("new user created");
       window.location = res.data.location;
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         setMessage(err.message);
       };
     });

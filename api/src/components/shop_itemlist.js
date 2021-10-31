@@ -13,7 +13,7 @@ export default function ShopItemList() {
       setLoading(false);
       console.log("updated!");
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         setMessage(err.message);
       };
     });
@@ -34,7 +34,7 @@ export default function ShopItemList() {
       setListItems(arr);
       setLoading(false);
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         setMessage(err.message);
       };
     });

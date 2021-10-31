@@ -27,7 +27,7 @@ export default function UserLogin() {
         setMessage(`Email is not registered. Sign Up?`);
       };
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         setMessage(err.message);
       }
     });
@@ -47,7 +47,7 @@ export default function UserLogin() {
       console.log("Website redirecting (user login)")
       window.location = res.data.location;
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         setMessage(err.message);
       };
     });

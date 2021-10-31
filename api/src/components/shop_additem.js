@@ -32,7 +32,7 @@ export default function ShopAddItem() {
       });
       setMessage(`Data received for ${res.data.item}: Latest Price ${res.data.price}`);
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         setMessage(err.message);
       };
     });
@@ -59,7 +59,7 @@ export default function ShopAddItem() {
         setMessage("The item is added to database");
       };
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         console.log(err.message);
       };
     });
