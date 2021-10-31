@@ -9,12 +9,11 @@ export default function ShopItemList() {
 
   function priceUpdate() {
     setLoading(true);
-    axios.put("/user_price_history_update",
-    ).then(res => {
+    axios.put("/user_price_history_update").then(res => {
       setLoading(false);
       console.log("updated!");
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         setMessage(err.message);
       };
     });
@@ -22,8 +21,7 @@ export default function ShopItemList() {
   
   function listUserItems() {
     setLoading(true);
-    axios.get("/list_user_items",
-    ).then(res => {
+    axios.get("/list_user_items").then(res => {
       let userItems = res.data;
       let arr = userItems.map((userItem) =>
         <li key={userItem.source_id.toString()}>
@@ -36,7 +34,7 @@ export default function ShopItemList() {
       setListItems(arr);
       setLoading(false);
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         setMessage(err.message);
       };
     });

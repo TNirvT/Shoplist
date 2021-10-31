@@ -6,13 +6,13 @@ import ToggleButton from "./toggle_button";
 
 export default function Home() {
   const [signup, setSignup] = useState(false);
-  let toogle_text = signup ? "Existing User? Log In" : "New User? Sign Up";
+  let toogleText = signup ? "Existing User? Log In" : "New User? Sign Up";
 
   return (
     <div>
       {signup || <UserLogin />}
       <br/>
-      <ToggleButton text={toogle_text} onToggle={()=>setSignup(!signup)} />
+      <ToggleButton text={toogleText} onToggle={() => setSignup(!signup)} />
       <br/>
       {signup && <UserCreation />}
     </div>

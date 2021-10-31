@@ -4,21 +4,21 @@ import axios from "axios";
 export default function ShopAddItem() {
   const [message, setMessage] = useState("");
   const [newItem, setNewItem] = useState({
-    url:"",
-    item:"",
-    alias:"",
-    price:0,
-    date:"",
-    shop:"",
+    url: "",
+    item: "",
+    alias: "",
+    price: 0,
+    date: "",
+    shop: "",
   });
 
-  function get_product_data() {
+  function getProductData() {
     axios.get("/get_product_data", {
       params: {
         url: newItem.url,
       },
     }).then(res => {
-      if (res.data.hasOwnProperty("error")) {
+      if (res.data.error) {
         setMessage(res.data.error);
         return
       };
@@ -32,7 +32,7 @@ export default function ShopAddItem() {
       });
       setMessage(`Data received for ${res.data.item}: Latest Price ${res.data.price}`);
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         setMessage(err.message);
       };
     });
@@ -49,18 +49,17 @@ export default function ShopAddItem() {
       return
     };
 
-    axios.put("/add_item", newItem
-    ).then(res => {
-      if (res.data.hasOwnProperty("error")) {
+    axios.put("/add_item", {params: newItem}).then(res => {
+      if (res.data.error) {
         console.log(res.data.error);
         setMessage(res.data.error);
         return
-      } else if (res.data.hasOwnProperty("added_item")) {
+      } else if (res.data.added_item) {
         console.log(`Item added`);
         setMessage("The item is added to database");
       };
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         console.log(err.message);
       };
     });
@@ -74,7 +73,7 @@ export default function ShopAddItem() {
       placeholder="URL"
       onBlur={ e => setNewItem({...newItem, url: e.target.value}) } />
     <label htmlFor="product_url">URL</label><br/>
-    <button onClick={get_product_data}>
+    <button onClick={getProductData}>
       Get Product Data
     </button><br/>
     <span>Item: {newItem.item}</span><br/>

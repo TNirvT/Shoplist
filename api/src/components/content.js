@@ -8,14 +8,13 @@ import ShopItemList from "./shop_itemlist";
 export default function Content() {
   const [screenName, setScreenName] = useState("");
   const [showAdd, setShowAdd] = useState(false);
-  let toggleText = showAdd? "Close" : "Add";
+  let toggleText = showAdd ? "Close" : "Add";
 
   function userLogout() {
-    axios.post("/logout",
-    ).then(res => {
+    axios.post("/logout").then(res => {
       window.location = "/";
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         setMessage(err.message);
       };
     });
@@ -27,7 +26,7 @@ export default function Content() {
     }).then(res => {
       setScreenName(res.data.user_name);
     }).catch(err => {
-      if (err != undefined) {
+      if (err) {
         console.log(err.message);
       }
     });
@@ -37,7 +36,7 @@ export default function Content() {
     axios.get(
 
     ).then(res => {}).catch(err => {
-      if (err != undefined) {
+      if (err) {
         console.log(err.message);
       }
     });
@@ -53,7 +52,7 @@ export default function Content() {
       <button onClick={userLogout}>Logout</button><br/>
       <h1>ShopList - Track online shopping items</h1>
       <h2>Welcome back, {screenName}!</h2>
-      <ToggleButton text={toggleText} onToggle={()=>setShowAdd(!showAdd)} /><br/>
+      <ToggleButton text={toggleText} onToggle={() => setShowAdd(!showAdd)} /><br/>
       {showAdd && <ShopAddItem />}
       <ShopItemList />
     </div>
