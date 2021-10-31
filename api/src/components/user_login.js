@@ -38,7 +38,7 @@ export default function UserLogin() {
       return
     };
 
-    axios.post("/login", {
+    axios.post("/login", null, {
       params: {
         email: credentials.email,
         password: credentials.password,

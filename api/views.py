@@ -21,8 +21,10 @@ def index():
 
 @views.route("/login", methods=["POST"])
 def login():
-    email = request.get_json()["email"]
-    password = request.get_json()["password"]
+    # email = request.get_json()["email"]
+    # password = request.get_json()["password"]
+    email = request.args.get("email")
+    password = request.args.get("password")
 
     cur = cnx.cursor()
     cur.execute(
@@ -173,10 +175,6 @@ def add_item():
         return jsonify({
             "error": f"Error when reaching the url({r['url']})",
         })
-    # elif r["item"] == "Can't reach the url":
-    #     return jsonify({
-    #         "error": f"Error when reaching the url({r['url']})",
-    #     })
     product_linked_to_url = check_existing_source(r["url"])
     if product_linked_to_url:
         pid, uid, item, sid = product_linked_to_url
@@ -218,3 +216,10 @@ def list_user_items():
         result["latest_on"] = datetime.strftime(result["latest_on"], "%Y-%m-%d")
         result["price"] = result["price"] and float(result["price"])
     return jsonify(results)
+
+@views.route("/get_user_items_history", methods=["GET"])
+def get_user_items_history():
+    current_user = validate_user()
+    if not current_user: return redirect(url_for("views.index"))
+    get_db_user_items_history(current_user)
+    return jsonify()
