@@ -8,5 +8,5 @@ export default function ToggleButton({text, onToggle}) {
 
 ToggleButton.defaultProps = {
   text: "Button-Text",
-  on_toggle: (e => {})
+  onToggle: (e => {})
 }

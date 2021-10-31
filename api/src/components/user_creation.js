@@ -17,23 +17,23 @@ export default function UserCreation() {
     if ( e.target.value.trim().length < 1 ) {
       setNewUser({...newUser, userName:null});
       setNameMessage(`User name must not be empty`);
-      setValidateAll({...validateAll, userName:false});
+      setValidateAll({...validateAll, userName: false});
     } else {
       setNewUser({...newUser, userName:e.target.value.trim()});
       setNameMessage(`✔`);
-      setValidateAll({...validateAll, userName:true});
+      setValidateAll({...validateAll, userName: true});
     }
   };
 
   function emailExistsCheck(e) {
     const reEmail = /^[\w\.]+@\w+\.\w+$/;
     if ( reEmail.test(e.target.value.trim()) ) {
-      setNewUser({...newUser, userEmail:e.target.value.trim()});
+      setNewUser({...newUser, userEmail: e.target.value.trim()});
       setEmailMessage("");
     } else {
       setNewUser({...newUser, userEmail:null});
       setEmailMessage(`Invalid Email`);
-      setValidateAll({...validateAll, userEmail:false});
+      setValidateAll({...validateAll, userEmail: false});
       return
     };
 
@@ -44,10 +44,10 @@ export default function UserCreation() {
     }).then(res => {
       if (res.data.email_exists) {
         setEmailMessage(`Email already exists`);
-        setValidateAll({...validateAll, userEmail:false});
+        setValidateAll({...validateAll, userEmail: false});
       } else {
         setEmailMessage(`✔`);
-        setValidateAll({...validateAll, userEmail:true});
+        setValidateAll({...validateAll, userEmail: true});
       };
     }).catch(err => {
       if (err != undefined) {
@@ -60,25 +60,25 @@ export default function UserCreation() {
     let rePw = /[ ]/;
     const newPw = e.target.value;
     if (rePw.test(newPw)) {
-      setNewUser({...newUser, password:null});
+      setNewUser({...newUser, password: null});
       setPasswordMessage(`Password must not contain white-space`);
-      setValidateAll({...validateAll, password:false});
+      setValidateAll({...validateAll, password: false});
     } else if (newPw.length < 6) {
-      setNewUser({...newUser, password:null});
+      setNewUser({...newUser, password: null});
       setPasswordMessage(`Password must be at least 6 characters`);
-      setValidateAll({...validateAll, password:false});
+      setValidateAll({...validateAll, password: false});
     } else {
-      setNewUser({...newUser, password:newPw});
+      setNewUser({...newUser, password: newPw});
       setPasswordMessage(`✔`);
-      setValidateAll({...validateAll, password:true});
+      setValidateAll({...validateAll, password: true});
     };
   };
 
   function createUser() {
     for (const field in validateAll) {
       if (!validateAll[field]) {
-        setMessage("Some of the fields are invalid")
-        return
+        setMessage("Some of the fields are invalid");
+        return;
       }
     };
 
@@ -102,7 +102,7 @@ export default function UserCreation() {
     <input
       type="text"
       placeholder="Name"
-      name="user_name"
+      name="userName"
       onBlur={nameCheck}
     /><br/>
     {nameMessage && <div><span>{nameMessage}</span></div>}
