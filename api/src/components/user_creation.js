@@ -82,7 +82,7 @@ export default function UserCreation() {
       }
     };
 
-    axios.put("/user_creation", {
+    axios.put("/user_creation", null, {
       params: {
         user_name: newUser.userName,
         user_email: newUser.userEmail,

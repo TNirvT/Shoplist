@@ -64,7 +64,8 @@ def check_existing_email():
 
 @views.route("/user_creation", methods=["PUT"])
 def user_creation():
-    user_name = request.get_json()["user_name"].strip()
+    # user_name = request.get_json()["user_name"].strip()
+    user_name = request.args.get("user_name").strip()
     if len(user_name) < 1:
         return "Invalid user name", 403
 
