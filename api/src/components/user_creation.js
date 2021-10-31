@@ -83,9 +83,11 @@ export default function UserCreation() {
     };
 
     axios.put("/user_creation", {
-      user_name: newUser.userName,
-      user_email: newUser.userEmail,
-      password: newUser.password
+      params: {
+        user_name: newUser.userName,
+        user_email: newUser.userEmail,
+        password: newUser.password,
+      },
     }).then(res => {
       setMessage("new user created");
       window.location = res.data.location;
