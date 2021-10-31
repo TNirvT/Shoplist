@@ -18,7 +18,7 @@ export default function ShopAddItem() {
         url: newItem.url,
       },
     }).then(res => {
-      if (res.data.hasOwnProperty("error")) {
+      if (res.data.error) {
         setMessage(res.data.error);
         return
       };
@@ -50,11 +50,11 @@ export default function ShopAddItem() {
     };
 
     axios.put("/add_item", {params: newItem}).then(res => {
-      if (res.data.hasOwnProperty("error")) {
+      if (res.data.error) {
         console.log(res.data.error);
         setMessage(res.data.error);
         return
-      } else if (res.data.hasOwnProperty("added_item")) {
+      } else if (res.data.added_item) {
         console.log(`Item added`);
         setMessage("The item is added to database");
       };
