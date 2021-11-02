@@ -49,7 +49,7 @@ export default function ShopAddItem() {
       return
     };
 
-    axios.put("/add_item", {params: newItem}).then(res => {
+    axios.put("/add_item", newItem).then(res => {
       if (res.data.error) {
         console.log(res.data.error);
         setMessage(res.data.error);

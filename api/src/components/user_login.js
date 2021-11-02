@@ -38,11 +38,9 @@ export default function UserLogin() {
       return
     };
 
-    axios.post("/login", null, {
-      params: {
-        email: credentials.email,
-        password: credentials.password,
-      },
+    axios.post("/login", {
+      email: credentials.email,
+      password: credentials.password,
     }).then(res => {
       console.log("Website redirecting (user login)")
       window.location = res.data.location;

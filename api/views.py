@@ -21,10 +21,8 @@ def index():
 
 @views.route("/login", methods=["POST"])
 def login():
-    # email = request.get_json()["email"]
-    # password = request.get_json()["password"]
-    email = request.args.get("email")
-    password = request.args.get("password")
+    email = request.get_json()["email"]
+    password = request.get_json()["password"]
 
     cur = cnx.cursor()
     cur.execute(
@@ -64,8 +62,7 @@ def check_existing_email():
 
 @views.route("/user_creation", methods=["PUT"])
 def user_creation():
-    # user_name = request.get_json()["user_name"].strip()
-    user_name = request.args.get("user_name").strip()
+    user_name = request.get_json()["user_name"].strip()
     if len(user_name) < 1:
         return "Invalid user name", 403
 
