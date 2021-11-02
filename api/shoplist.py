@@ -7,9 +7,9 @@ from bs4 import BeautifulSoup
 
 # [shop domain: str, path, params, query: regex str, simple tags: boolean]
 SHOPS = {
-    "Amazon US": ["www.amazon.com", r"(/[^/\s]+)?/dp/[^/\s]+", "", "", True],
-    "Amazon Japan": ["www.amazon.co.jp", r"(/[^/\s]+)?/dp/[^/\s]+", "", "", True],
-    "Amazon UK": ["www.amazon.co.uk", r"(/[^/\s]+)?/dp/[^/\s]+", "", "", True],
+    "Amazon US": ["www.amazon.com", r"(/[^/\s]+)?/dp/[^/\s]+", "", "", False],
+    "Amazon Japan": ["www.amazon.co.jp", r"(/[^/\s]+)?/dp/[^/\s]+", "", "", False],
+    "Amazon UK": ["www.amazon.co.uk", r"(/[^/\s]+)?/dp/[^/\s]+", "", "", False],
     # "B and H": ["www.bhphotovideo.com", r"/c/product/[^/\s]+/[^/\s]+\.html$", "", "", True],
     "Best Buy": ["www.bestbuy.com", r"/site/[^/\s]+/\d+\.p", "", r"skuId=\d+", False],
 }
@@ -49,10 +49,6 @@ def url_parser(url: str):
 def _simple_tags(soup: BeautifulSoup, shop: str):
     # tags = {"price": [tag, attrs], "item": [tag, attrs]}
     TAGS = {
-        "Amazon": {
-            "item": ["span", {"id":"productTitle"}],
-            "price": ["span", {"id":"priceblock_ourprice"}],
-        },
         "B and H": {
             "item": ["h1", {"data-selenium":"productTitle"}],
             "price": ["div", {"data-selenium":"pricingPrice"}],
@@ -63,6 +59,16 @@ def _simple_tags(soup: BeautifulSoup, shop: str):
     if item: item = item.text.strip()
     price_raw = soup.find(TAGS[shop]["price"][0], attrs=TAGS[shop]["price"][1])
     if price_raw: price_raw = price_raw.text
+    return item, price_raw
+
+def _amazon_tags(soup: BeautifulSoup):
+    item = soup.find("h1", attrs={"id": "title"})
+    if item: item = item.text.strip()
+    print("item", item) #debug
+    price_div = soup.find("div", attrs={"id": "corePrice_desktop"})
+    print("priec_div", price_div) #debug
+    price_raw = price_div.find("span", attrs={"class": "a-price a-text-price a-size-medium apexPriceToPay"})
+    print(price_raw) #debug
     return item, price_raw
 
 def _bestbuy_tags(soup: BeautifulSoup):
@@ -77,13 +83,14 @@ def scrap_product_data(url: str, shop: str):
         "accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
         "accept-encoding":"gzip, deflate, br",
         "accept-language":"en-GB,en;q=0.9",
+        "cache-control": "max-age=0",
         "sec-fetch-dest":"document",
         "sec-fetch-mode":"navigate",
         "sec-fetch-site":"none",
         "sec-fetch-user":"?1",
         "sec-gpc":"1",
         "Upgrade-Insecure-Requests":"1",
-        "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36",
+        "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
     }
     r = requests.get(url, headers=headers)
     
@@ -94,10 +101,9 @@ def scrap_product_data(url: str, shop: str):
     soup = BeautifulSoup(r.content, "lxml")
 
     if SHOPS[shop][4]:
-        if "Amazon" in shop:
-            item, price_raw = _simple_tags(soup, "Amazon")
-        else:
-            item, price_raw = _simple_tags(soup, shop)
+        item, price_raw = _simple_tags(soup, shop)
+    elif "Amazon" in shop:
+        item, price_raw = _amazon_tags(soup)
     elif shop == "Best Buy":
         item, price_raw = _bestbuy_tags(soup)
     
