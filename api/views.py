@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 # import decimal
 
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, session
@@ -153,7 +153,7 @@ def get_product():
             "item": get_db_product(source_id),
             "price": result_db[0],
             "date": result_db[1],
-            "shop": result_db[2],
+            "shop": shop,
         })
     result = scrap_product_data(url_norm, shop)
     return jsonify({
@@ -183,7 +183,7 @@ def add_item():
         else:
             add_product_w_existing_source(current_user, r["item"], r["alias"], sid)
             return jsonify({ "added_item": True })
-    add_product(r["url"], get_db_shopid(r["shop"]), current_user, r["item"], r["alias"], r["date"], r["price"])
+    add_product(r["url"], get_db_shopid(r["shop"]), current_user, r["item"], r["alias"], r["timestamp"], r["price"])
     return jsonify({ "added_item": True })
 
 # @views.route("/add_source", methods=["PUT"])
@@ -194,25 +194,26 @@ def add_item():
 def user_price_history_update():
     current_user = validate_user()
     if not current_user: return redirect(url_for("views.index"))
+
     sources = get_db_user_items(current_user)
     for source in sources:
         shop = get_db_shop(source[2])
-        item, price, date_today = scrap_product_data(source[1], shop)
-        latest_price_date = datetime.strftime(get_db_latest_price(source[0])[1], "%Y-%m-%d")
-        if latest_price_date == date_today:
-            update_today_price(price, source[0],date_today)
+        item, price, stamp_today = scrap_product_data(source[1], shop)
+        if item == "Can't reach the url":
+            print(f"update skipped, source_id: {source[0]}")
+            continue
+        elif get_db_latest_price(source[0])[1] == stamp_today:
+            update_today_price(price, source[0], stamp_today)
         else:
-            add_today_price(price, source[0], date_today)
+            add_today_price(price, source[0], stamp_today)
     return jsonify({ "update_sucess": True })
 
 @views.route("/list_user_items", methods=["GET"])
 def list_user_items():
     current_user = validate_user()
     if not current_user: return redirect(url_for("views.index"))
+
     results = get_db_user_items_detailed(current_user)
-    for result in results:
-        result["latest_on"] = datetime.strftime(result["latest_on"], "%Y-%m-%d")
-        result["price"] = result["price"] and float(result["price"])
     return jsonify(results)
 
 @views.route("/get_user_items_history", methods=["GET"])

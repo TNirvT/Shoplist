@@ -8,7 +8,8 @@ export default function ShopAddItem() {
     item: "",
     alias: "",
     price: 0,
-    date: "",
+    timestamp: 0,
+    dateFormated: "",
     shop: "",
   });
 
@@ -23,11 +24,15 @@ export default function ShopAddItem() {
         return
       };
       document.getElementById("product_url").value = res.data.url_norm;
+      const dateLocal = new Date(res.data.date * 1000);
+      const monthLocal = dateLocal.getMonth() + 1;
+      const dayLocal = dateLocal.getDay();
       setNewItem({...newItem,
         url: res.data.url_norm,
         item: res.data.item,
         price: res.data.price,
-        date: res.data.date,
+        timestamp: res.data.date,
+        dateFormated: `${dateLocal.getFullYear()}-${("0" + monthLocal).substr(-2)}-${("0" + dayLocal).substr(-2)}`,
         shop: res.data.shop,
       });
       setMessage(`Data received for ${res.data.item}: Latest Price ${res.data.price}`);
@@ -40,18 +45,15 @@ export default function ShopAddItem() {
 
   function addItemToDB() {
     if (!newItem.url) {
-      console.log("Error. URL is empty");
       setMessage("Error. URL is empty");
       return
     } else if (newItem.item === "Can't reach the url") {
-      console.log("Error. Can't reach the url");
       setMessage("Error. Can't reach the url");
       return
     };
 
     axios.put("/add_item", newItem).then(res => {
       if (res.data.error) {
-        console.log(res.data.error);
         setMessage(res.data.error);
         return
       } else if (res.data.added_item) {

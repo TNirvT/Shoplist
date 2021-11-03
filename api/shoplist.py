@@ -1,7 +1,7 @@
 import re
 import requests
 from urllib.parse import urlparse, urlunparse
-from datetime import datetime
+from datetime import datetime, timezone
 
 from bs4 import BeautifulSoup
 
@@ -58,7 +58,7 @@ def _simple_tags(soup: BeautifulSoup, shop: str):
     item = soup.find(TAGS[shop]["item"][0], attrs=TAGS[shop]["item"][1])
     if item: item = item.text.strip()
     price_raw = soup.find(TAGS[shop]["price"][0], attrs=TAGS[shop]["price"][1])
-    if price_raw: price_raw = price_raw.text
+    if price_raw: price_raw = price_raw.text.strip()
     return item, price_raw
 
 def _amazon_tags(soup: BeautifulSoup):
@@ -66,16 +66,19 @@ def _amazon_tags(soup: BeautifulSoup):
     if item: item = item.text.strip()
     print("item", item) #debug
     price_div = soup.find("div", attrs={"id": "corePrice_desktop"})
-    print("priec_div", price_div) #debug
+    # print("priec_div", price_div) #debug
     price_raw = price_div.find("span", attrs={"class": "a-price a-text-price a-size-medium apexPriceToPay"})
-    print(price_raw) #debug
+    if price_raw: price_raw = price_raw.text.strip()
+    print("price_raw", price_raw) #debug
     return item, price_raw
 
 def _bestbuy_tags(soup: BeautifulSoup):
     item_div = soup.find("div", attrs={"class":"sku-title"})
-    item = item_div.find("h1").text.strip()
+    item = item_div.find("h1")
+    if item: item = item.text.strip()
     price_div = soup.find("div", attrs={"class":"priceView-hero-price priceView-customer-price"})
-    price_raw = price_div.find("span", attrs={"aria-hidden":"true"}).text.strip()
+    price_raw = price_div.find("span", attrs={"aria-hidden":"true"})
+    if price_raw: price_raw = price_raw.text.strip()
     return item, price_raw
 
 def scrap_product_data(url: str, shop: str):  
@@ -92,6 +95,10 @@ def scrap_product_data(url: str, shop: str):
         "Upgrade-Insecure-Requests":"1",
         "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
     }
+
+    if "Amazon" in shop:
+        return "Can't reach the url", None, None
+
     r = requests.get(url, headers=headers)
     
     # in case, error when reaching the url
@@ -107,13 +114,17 @@ def scrap_product_data(url: str, shop: str):
     elif shop == "Best Buy":
         item, price_raw = _bestbuy_tags(soup)
     
+    offset = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+
     # in case, out of stock
     if not price_raw:
-        return item, None, datetime.now().strftime("%Y-%m-%d")
+        # return item, None, datetime.now().strftime("%Y-%m-%d")
+        return item, None, offset.timestamp()
 
     # remove the thousands separator
     price_rmv_sep = re.sub(r"[,\.](?=\d{3})", "", price_raw)
     # change decimal separator to "."
     price_decimal = re.sub(r",(?=\d{2}\D)", ".", price_rmv_sep)
     price = float(re.search(r"[\d\.]+", price_decimal).group(0))
-    return item, price, datetime.now().strftime("%Y-%m-%d")
+    # return item, price, datetime.now().strftime("%Y-%m-%d")
+    return item, price, offset.timestamp()
