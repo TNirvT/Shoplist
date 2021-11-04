@@ -220,5 +220,6 @@ def list_user_items():
 def get_user_items_history():
     current_user = validate_user()
     if not current_user: return redirect(url_for("views.index"))
+    
     get_db_user_items_history(current_user)
     return jsonify()

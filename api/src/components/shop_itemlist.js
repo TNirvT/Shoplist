@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Line } from "react-chartjs-2";
+// import { Line } from "react-chartjs-2";
 
 export default function ShopItemList() {
   const [message, setMessage] = useState("");
@@ -40,13 +40,24 @@ export default function ShopItemList() {
     });
   };
 
-  function datesThisMonth() {
+  function getItemHistory() {
+    axios.get("/get_user_items_history",).then(res => {
+      console.log("get user history done");
+    }).catch(err => {
+      if (err != undefined) {
+        setMessage(err.message);
+      };
+    });
+  };
+  
+  function last30Days() {
     let datesArr = [];
-    const today = new Date();
-    let iterDate = new Date();
+    const nowLocal = new Date();
+    let iterDate = new Date(nowLocal);
     iterDate.setDate(iterDate.getDate()-29);
-    while (iterDate <= today) {
-      const indexDate = `${iterDate.getFullYear()}-${iterDate.getMonth()+1}-${iterDate.getDate()}`;
+    while (iterDate <= nowLocal) {
+      const indexDate = iterDate.toISOString().substr(0,10);
+      // indexDate in UTC timezone, format: yyyy-mm-dd
       datesArr.push(indexDate);
       iterDate.setDate(iterDate.getDate()+1);
     }
@@ -69,7 +80,7 @@ export default function ShopItemList() {
       <div className="loader"></div>
     }
     <button onClick={priceUpdate}>Price update(user's items)</button><br/>
-    <button onClick={listUserItems}>List</button><br/>
+    <button onClick={getItemHistory}>Get Item History</button><br/>
     </React.Fragment>
   )
 }
