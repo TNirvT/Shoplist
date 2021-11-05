@@ -113,7 +113,7 @@ def get_db_user_items_history(user_id):
     )
     sources = cur.fetchall()
     # e.g. sources_arr = [(1, "item1", "alias" | None), ...]
-    print(sources) #debug
+    # print(sources) #debug
     # loop thr the source ids to get a list of dates and another of prices
     result = []
     for source in sources:
@@ -157,7 +157,8 @@ def get_db_user_items_history(user_id):
     #   },
     #   ...
     # ]
-    print(*result, sep="\n") # debug
+    # print(*result, sep="\n") # debug
+    print(f"history result: {len(result)}") # debug
     return result
 
 def add_product(url, shop_id, user_id, item_name, alias, stamp_today, price):
