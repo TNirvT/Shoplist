@@ -5,7 +5,8 @@ import { Line } from "react-chartjs-2";
 export default function ShopItemList() {
   const [message, setMessage] = useState("");
   const [listItems, setListItems] = useState([]);
-  const [chartDataArr, setChartDataArr] = useState([]);
+  const [chartDataSets, setChartDataSets] = useState([]);
+  const [showChart, setShowChart] = useState(false);
   const [loading, setLoading] = useState(false);
 
   function priceUpdate() {
@@ -61,7 +62,7 @@ export default function ShopItemList() {
     for (let i = 0; i < prices.length; i++) {
       prices[i][0] = new Date(prices[i][0] * 1000).toISOString().substr(0, 10);
     };
-    console.log(prices);
+    // console.log(prices);
 
     let pricesFormatted = [];
     const pricesObject = Object.fromEntries(prices);
@@ -69,7 +70,7 @@ export default function ShopItemList() {
       const price = pricesObject[day];
       price ? pricesFormatted.push(price) : pricesFormatted.push(null);
     };
-    console.log(pricesFormatted);
+    // console.log(pricesFormatted);
     return pricesFormatted
   };
 
@@ -85,32 +86,24 @@ export default function ShopItemList() {
       //   },
       //   ...
       // ]
-      setChartDataArr([]);
+      setChartDataSets([]);
       for (const source of rawData) {
-        setChartDataArr(oldArr => [...oldArr, dataRearrange(source.stamp_prices)]);
+        setChartDataSets(oldArr => [...oldArr, {
+          label: source.item_name,
+          data: dataRearrange(source.stamp_prices),
+          fill: false,
+          backgroundColor: 'rgb(255, 99, 132)',
+          borderColor: 'rgba(255, 99, 132, 0.2)',
+        }]);
       };
       console.log("get user history done");
+      setShowChart(true);
     }).catch(err => {
       if (err) {
         setMessage(err.message); // ???
       };
     });
   };
-
-  // tiral dataset
-  const tempData = {
-    labels: ['1', '2', '3', '4', '5', '6'],
-    datasets: [
-      {
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        fill: false,
-        backgroundColor: 'rgb(255, 99, 132)',
-        borderColor: 'rgba(255, 99, 132, 0.2)',
-      },
-    ],
-  };
-  ////////////////
 
   useEffect(() => {
     listUserItems();
@@ -126,14 +119,18 @@ export default function ShopItemList() {
     {loading &&
       <div className="loader"></div>
     }
-    <span>{message}</span>{message && <br/>}
+    <span>{message}</span><br/>
     <button onClick={priceUpdate}>Price update(user's items)</button><br/>
     <button onClick={getItemHistory}>Get Item History</button><br/>
-    <button onClick={() => dataRearrange([[1636157461.137333, 1.0],[1635898389.139973, 0.5]])}>Data Rearrange</button><br/>
     {
-      chartDataArr.length ?
+      showChart &&
+      // chartDataSets.length &&
       <Line
-        data={tempData}
+        data={{
+          labels: daysLabelArr,
+          datasets: chartDataSets
+        }}
+        // data={tempData}
         width={500}
         height={200}
         options={{
@@ -143,7 +140,7 @@ export default function ShopItemList() {
             }
           }
         }}
-      /> : <span></span>
+      />
     }
     </React.Fragment>
   )
