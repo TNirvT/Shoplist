@@ -57,11 +57,16 @@ export default function ShopItemList() {
   
   const daysLabelArr = daysLabel();
   
-  function dataRearrange(dates, prices) {
+  function dataRearrange(prices) {
+    for (let i = 0; i < prices.length; i++) {
+      prices[i][0] = new Date(prices[i][0] * 1000).toISOString().substr(0, 10);
+    };
+    console.log(prices);
+
     let pricesFormatted = [];
-    const pricesObject = Object.fromEntries(dates.map( (_, i) => [dates[i], prices[i]] ));
-    for (let i = 0; i < daysLabelArr.length; i++) {
-      const price = pricesObject[daysLabelArr[i]];
+    const pricesObject = Object.fromEntries(prices);
+    for (const day of daysLabelArr) {
+      const price = pricesObject[day];
       price ? pricesFormatted.push(price) : pricesFormatted.push(null);
     };
     console.log(pricesFormatted);
@@ -76,25 +81,18 @@ export default function ShopItemList() {
       //     'source_id': 1,
       //     'item_name': 'name',
       //     'user_alias': 'alias',
-      //     'dates': [timestamp(10 digit), ...],
-      //     'prices': [float | None, ...]
+      //     'stamp_prices': [ [number(10 digit timestamp), number(price)|None], ... ]
       //   },
       //   ...
       // ]
-      for (let i = 0; i < rawData.length; i++) {
-        let datesNew = [];
-        for (let j = 0; j < rawData[i].dates.length; j++) {
-          const dateUTC = new Date(rawData[i].dates[j] * 1000).toISOString().substr(0,10);
-          datesNew.push(dateUTC);
-        };
-        rawData[i].dates = datesNew;
-        console.log(`${rawData[i].dates}`);
+      setChartDataArr([]);
+      for (const source of rawData) {
+        setChartDataArr(oldArr => [...oldArr, dataRearrange(source.stamp_prices)]);
       };
-      setChartDataArr(dataRearrange(rawData[0].dates, rawData[0].prices));
       console.log("get user history done");
     }).catch(err => {
       if (err) {
-        setMessage(err.message);
+        setMessage(err.message); // ???
       };
     });
   };
@@ -131,7 +129,7 @@ export default function ShopItemList() {
     <span>{message}</span>{message && <br/>}
     <button onClick={priceUpdate}>Price update(user's items)</button><br/>
     <button onClick={getItemHistory}>Get Item History</button><br/>
-    <button onClick={() => dataRearrange(["2021-11-01"],[1.0])}>Data Rearrange</button><br/>
+    <button onClick={() => dataRearrange([[1636157461.137333, 1.0],[1635898389.139973, 0.5]])}>Data Rearrange</button><br/>
     {
       chartDataArr.length ?
       <Line

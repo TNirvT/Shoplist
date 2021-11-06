@@ -129,20 +129,13 @@ def get_db_user_items_history(user_id):
             "source_id": source[0],
             "item_name": source[1],
             "user_alias": source[2],
-            "dates": list(
-                map(
-                    lambda x: datetime(
-                        x[0].year, x[0].month, x[0].day, tzinfo=timezone.utc
-                    ).timestamp(),
-                    history_data
-                )
-            ),
-            "prices": list(
-                map(
-                    lambda x: x[1] and float(x[1]),
-                    history_data
-                )
-            )
+            "stamp_prices": list(map(
+                lambda x: [
+                    datetime(x[0].year, x[0].month, x[0].day, tzinfo=timezone.utc).timestamp(),
+                    x[1] and float(x[1])
+                ],
+                history_data
+            ))
         })
     cur.close()
 
@@ -152,8 +145,7 @@ def get_db_user_items_history(user_id):
     #       'source_id': 1,
     #       'item_name': 'name',
     #       'user_alias': 'alias',
-    #       'dates': [timestamp(10 digit), ...],
-    #       'prices': [float | None, ...]
+    #       'stamp_prices': [ [float(timestamp), float(price)|None], ... ]
     #   },
     #   ...
     # ]
