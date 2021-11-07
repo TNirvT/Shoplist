@@ -86,14 +86,28 @@ export default function ShopItemList() {
       //   },
       //   ...
       // ]
+      const colors = [
+        "255, 99, 132",
+        "255, 174, 33",
+        "255, 33, 248",
+        "235, 212, 40",
+        "66, 82, 255",
+        "50, 224, 34",
+        "74, 213, 255",
+        "255, 43, 15",
+        "15, 239, 255",
+        "235, 212, 40",
+      ];
+
       setChartDataSets([]);
-      for (const source of rawData) {
+      // for (const source of rawData) {
+      for (let i = 0; i < rawData.length; i++) {
         setChartDataSets(oldArr => [...oldArr, {
-          label: source.item_name,
-          data: dataRearrange(source.stamp_prices),
+          label: rawData[i].item_name,
+          data: dataRearrange(rawData[i].stamp_prices),
           fill: false,
-          backgroundColor: 'rgb(255, 99, 132)',
-          borderColor: 'rgba(255, 99, 132, 0.2)',
+          backgroundColor: `rgb(${colors[i % 10]})`,
+          borderColor: `rgba(${colors[i % 10]}, 0.2)`,
         }]);
       };
       console.log("get user history done");
