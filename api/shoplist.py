@@ -14,14 +14,6 @@ SHOPS = {
     "Best Buy": ["www.bestbuy.com", r"/site/[^/\s]+/\d+\.p", "", r"skuId=\d+", False],
 }
 
-# https://www.amazon.com/dp/B07YNHYQ5Z/
-# https://www.amazon.com/New-Microsoft-Surface-Pro-Touch-Screen/dp/B07YNHYQ5Z
-# https://www.bestbuy.com/site/microsoft-surface-pro-7-12-3-touch-screen-intel-core-i5-8gb-memory-256gb-ssd-device-only-latest-model-matte-black/6375619.p?skuId=6375619
-
-# https://www.amazon.com/2021-Apple-12-9-inch-Wi%E2%80%91Fi-128GB/dp/B0932D45W8/
-# https://www.bhphotovideo.com/c/product/1636228-REG/apple_mhnf3ll_a_12_9_ipad_pro_wifi.html
-# https://www.bestbuy.com/site/apple-12-9-inch-ipad-pro-latest-model-with-wi-fi-128gb-space-gray/4263701.p?skuId=4263701
-
 def url_parser(url: str):
     url = url.strip()
     # normalize to https://www...
@@ -95,9 +87,6 @@ def scrap_product_data(url: str, shop: str):
         "Upgrade-Insecure-Requests":"1",
         "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
     }
-
-    if "Amazon" in shop:
-        return "Can't reach the url", None, None
 
     r = requests.get(url, headers=headers)
     
