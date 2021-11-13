@@ -4,11 +4,32 @@ import { Line } from "react-chartjs-2";
 
 export default function ShopItemList() {
   const [message, setMessage] = useState("");
-  const [listItems, setListItems] = useState([]);
+  const [itemList, setItemList] = useState([]);
   const [chartDataSets, setChartDataSets] = useState([]);
   const [showChart, setShowChart] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  function loadItemList() {
+    setLoading(true);
+    axios.get("/list_user_items").then(res => {
+      const userItems = res.data;
+      let arr = userItems.map((item) =>
+        <li key={item.source_id.toString()}>
+          {item.item_name.substring(0,35)}
+          {item.item_name.length > 35 && "..."}
+          {" : $"}
+          {item.price}
+        </li>
+      );
+      setItemList(arr);
+      setLoading(false);
+    }).catch(err => {
+      if (err) {
+        setMessage(err.message);
+      };
+    });
+  };
+  
   function priceUpdate() {
     setLoading(true);
     axios.put("/user_price_history_update").then(res => {
@@ -18,28 +39,7 @@ export default function ShopItemList() {
       if (err) {
         setMessage(err.message);
       };
-    });
-  };
-  
-  function listUserItems() {
-    setLoading(true);
-    axios.get("/list_user_items").then(res => {
-      const userItems = res.data;
-      let arr = userItems.map((userItem) =>
-        <li key={userItem.source_id.toString()}>
-          {userItem.item_name.substring(0,35)}
-          {userItem.item_name.length > 35 && "..."}
-          {" : $"}
-          {userItem.price}
-        </li>
-      );
-      setListItems(arr);
-      setLoading(false);
-    }).catch(err => {
-      if (err) {
-        setMessage(err.message);
-      };
-    });
+    }).finally(loadItemList);
   };
   
   function daysLabel() {
@@ -62,7 +62,6 @@ export default function ShopItemList() {
     for (let i = 0; i < prices.length; i++) {
       prices[i][0] = new Date(prices[i][0] * 1000).toISOString().substr(0, 10);
     };
-    // console.log(prices);
 
     let pricesFormatted = [];
     const pricesObject = Object.fromEntries(prices);
@@ -70,7 +69,6 @@ export default function ShopItemList() {
       const price = pricesObject[day];
       price ? pricesFormatted.push(price) : pricesFormatted.push(null);
     };
-    // console.log(pricesFormatted);
     return pricesFormatted
   };
 
@@ -120,7 +118,7 @@ export default function ShopItemList() {
   };
 
   useEffect(() => {
-    listUserItems();
+    loadItemList();
     console.log("useEffect: list");
   }, []);
 
@@ -128,7 +126,7 @@ export default function ShopItemList() {
     <React.Fragment>
     <h2>Item List</h2>
     <ul>
-      {listItems}
+      {itemList}
     </ul>
     {loading &&
       <div className="loader"></div>
@@ -138,13 +136,11 @@ export default function ShopItemList() {
     <button onClick={getItemHistory}>Get Item History</button><br/>
     {
       showChart &&
-      // chartDataSets.length &&
       <Line
         data={{
           labels: daysLabelArr,
           datasets: chartDataSets
         }}
-        // data={tempData}
         width={500}
         height={200}
         options={{
