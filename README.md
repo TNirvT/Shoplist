@@ -7,7 +7,7 @@ Amazon (US, Japan, UK), Best Buy are supported.
 
 ## **Modules requried:**
 ____
-**Python** modules:  
+**Python (3.9+)** modules:  
 beautifulsoup4 (4.9.3)  
 lxml (4.6.3)  
 Flask (2.0.1)  
@@ -22,5 +22,7 @@ ____
 ____
 
 > ## ToDo:  
+> - Add delete function to remove a product
+> - Add search function in user item list
 > - Add option to add new source to existing item in database.  
 > - Add option to change user details (name, password, etc.).  
