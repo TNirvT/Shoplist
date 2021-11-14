@@ -118,7 +118,7 @@ export default function ShopItemList() {
           fill: false,
           backgroundColor: `rgb(${colors[i % 10]})`,
           borderColor: `rgba(${colors[i % 10]}, 0.2)`,
-        }]);
+        }])
       };
       console.log("get user history done");
       setShowChart(true);
@@ -137,6 +137,14 @@ export default function ShopItemList() {
   return (
     <React.Fragment>
     <h2>Item List</h2>
+    <label htmlFor="itemSearch">Search</label>
+    <input
+      type="text"
+      id="itemSearch"
+      name="itemSearch"
+      placeholder="SEARCH"
+      size="30"
+    /><br/>
     <ul>
       {itemList}
     </ul>
@@ -157,9 +165,7 @@ export default function ShopItemList() {
         height={200}
         options={{
           scales: {
-            y: {
-              beginAtZero: true
-            }
+            y: {beginAtZero: true}
           }
         }}
       />

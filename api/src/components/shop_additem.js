@@ -73,7 +73,8 @@ export default function ShopAddItem() {
       type="text"
       id="product_url"
       placeholder="URL"
-      onBlur={ e => setNewItem({...newItem, url: e.target.value}) } />
+      onBlur={e => setNewItem({...newItem, url: e.target.value})}
+    />
     <label htmlFor="product_url">URL</label><br/>
     <button onClick={getProductData}>
       Get Product Data
@@ -84,7 +85,8 @@ export default function ShopAddItem() {
       type="text"
       id="user_alias"
       placeholder="Item name Alias"
-      onBlur={ e => setNewItem({...newItem, alias: e.target.value}) } />
+      onBlur={e => setNewItem({...newItem, alias: e.target.value})}
+    />
     <label htmlFor="product_name">Alias</label><br/>
     <button onClick={addItemToDB}>
       Add Item to DB

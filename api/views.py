@@ -186,10 +186,6 @@ def add_item():
     add_product(r["url"], get_db_shopid(r["shop"]), current_user, r["item"], r["alias"], r["timestamp"], r["price"])
     return jsonify({ "added_item": True })
 
-# @views.route("/add_source", methods=["PUT"])
-# def add_source_url():
-#     return
-
 @views.route("/user_price_history_update", methods=["PUT"])
 def user_price_history_update():
     current_user = validate_user()
