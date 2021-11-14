@@ -217,3 +217,19 @@ def add_today_price(price, source_id, stamp_today):
     )
     cnx.commit()
     cur.close()
+
+def remove_product_from_user(product_id):
+    cur = cnx.cursor()
+    cur.execute(
+        """DELETE FROM product_source_links
+        WHERE product_id = %s""",
+        (product_id,)
+    )
+    cur.execute(
+        """DELETE FROM products
+        WHERE id = %s""",
+        (product_id,)
+    )
+    # the corresponding source and price history will remain in database however
+    cnx.commit()
+    cur.close()
