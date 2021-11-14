@@ -69,7 +69,7 @@ def get_db_user_items(user_id) -> list[tuple[int, str, int]]:
 def get_db_user_items_detailed(user_id) -> list[dict]:
     cur = cnx.cursor(dictionary=True)
     cur.execute(
-        """SELECT p.id product_id, p.item_name, p.user_alias, l.source_id, s.url, s.shop_id, ph.latest_on, ph_.price
+        """SELECT p.id product_id, p.item_name, p.user_alias, l.source_id, s.url, sh.shop, ph.latest_on, ph_.price
         FROM sources s
         JOIN product_source_links l ON s.id = l.source_id
         JOIN products p ON l.product_id = p.id
@@ -79,6 +79,7 @@ def get_db_user_items_detailed(user_id) -> list[dict]:
             GROUP BY source_id
         ) ph ON ph.source_id = s.id
         JOIN price_history ph_ ON ph_.source_id = ph.source_id AND ph_.date = ph.latest_on
+        JOIN shops sh ON sh.id = s.shop_id
         WHERE p.user_id = %s""",
         (user_id,)
     )
@@ -86,7 +87,7 @@ def get_db_user_items_detailed(user_id) -> list[dict]:
     # print(*sources, sep="\n") #debug
     # sources arr=[
     #     {'product_id':int, 'item_name':str, 'user_alias':str,
-    #     'source_id':int, 'url':str, 'shop_id':int,
+    #     'source_id':int, 'url':str, 'shop':str,
     #     'latest_on':datetime.date, 'price':decimal.Decimal},
     # ...]
     for source in sources:
@@ -99,7 +100,7 @@ def get_db_user_items_detailed(user_id) -> list[dict]:
     cur.close()
     return sources
 
-def get_db_user_items_history(user_id):
+def get_db_user_items_history(user_id) -> list[dict]:
     cur = cnx.cursor()
     # extract list of source ids
     cur.execute(

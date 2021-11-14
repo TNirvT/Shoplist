@@ -17,8 +17,20 @@ export default function ShopItemList() {
         <li key={item.source_id.toString()}>
           {item.item_name.substring(0,35)}
           {item.item_name.length > 35 && "..."}
-          {" : $"}
-          {item.price}
+          <ul style={{listStyleType: "none"}}>
+            <li>
+              <input
+                type="checkbox"
+                id={item.source_id.toString()}
+                name={item.source_id.toString()}
+              />
+              <label htmlFor={item.source_id.toString()}>
+                {item.shop}
+                {" : $"}
+                {item.price}
+              </label>
+            </li>
+          </ul>
         </li>
       );
       setItemList(arr);
