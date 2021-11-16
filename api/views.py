@@ -111,10 +111,12 @@ def user_creation():
 
 @views.route("/user_chg_pw", methods=["PUT"])
 def user_chg_pw():
+    # add code
     return
 
 @views.route("/user_deletion", methods=["DELETE"])
 def user_deletion():
+    # add code
     return
 
 @views.route("/content", methods=["GET"])
@@ -185,6 +187,19 @@ def add_item():
             return jsonify({ "added_item": True })
     add_product(r["url"], get_db_shopid(r["shop"]), current_user, r["item"], r["alias"], r["timestamp"], r["price"])
     return jsonify({ "added_item": True })
+
+@views.route("/remove_item", methods=["DELETE"])
+def remove_item():
+    current_user = validate_user()
+    if not current_user: return redirect(url_for("views.index"))
+
+    product_id = request.args.get("productID")
+    print(f"pid= {product_id}") #debug
+    try:
+        remove_product_from_user(product_id, current_user)
+    except Exception as err:
+        return jsonify({"error": str(err)})
+    return jsonify()
 
 @views.route("/user_price_history_update", methods=["PUT"])
 def user_price_history_update():

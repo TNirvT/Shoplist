@@ -218,8 +218,18 @@ def add_today_price(price, source_id, stamp_today):
     cnx.commit()
     cur.close()
 
-def remove_product_from_user(product_id):
+def remove_product_from_user(product_id, user_id):
     cur = cnx.cursor()
+    cur.execute(
+        """SELECT user_id
+        FROM products
+        WHERE id = %s""",
+        (product_id,)
+    )
+    belongs_to = cur.fetchone()[0]
+    if user_id != belongs_to:
+        cur.close()
+        raise Exception("product belongs to another user")
     cur.execute(
         """DELETE FROM product_source_links
         WHERE product_id = %s""",

@@ -29,6 +29,9 @@ export default function ShopItemList() {
                 {" : $"}
                 {item.price}
               </label>
+              <span className="deleteBtn" onClick={() => onDelete(item.product_id)}>
+                delete
+              </span>
             </li>
           </ul>
         </li>
@@ -36,10 +39,25 @@ export default function ShopItemList() {
       setItemList(arr);
       setLoading(false);
     }).catch(err => {
-      if (err) {
-        setMessage(err.message);
-      };
+      if (err) setMessage(err.message);
     });
+  };
+
+  function onDelete(productID) {
+    axios.delete("/remove_item", {
+      params: {
+        productID: productID,
+      },
+    }).then(res => {
+      if (res.data.error) {
+        setMessage(res.data.error);
+        return
+      };
+      console.log(`onDelete, pid= ${productID}`);
+      loadItemList();
+    }).catch(err => {
+      if (err) setMessage(err.message);
+    })
   };
   
   function priceUpdate() {
@@ -48,9 +66,7 @@ export default function ShopItemList() {
       setLoading(false);
       setMessage("Datebase Updated!")
     }).catch(err => {
-      if (err) {
-        setMessage(err.message);
-      };
+      if (err) setMessage(err.message);
     }).finally(loadItemList);
   };
   
@@ -85,7 +101,7 @@ export default function ShopItemList() {
   };
 
   function getItemHistory() {
-    axios.get("/get_user_items_history",).then(res => {
+    axios.get("/get_user_items_history").then(res => {
       let rawData = res.data;
       // rawData = [
       //   {
@@ -124,7 +140,8 @@ export default function ShopItemList() {
       setShowChart(true);
     }).catch(err => {
       if (err) {
-        setMessage(err.message); // ???
+        setMessage(err.message);
+        console.log(err.message);
       };
     });
   };
