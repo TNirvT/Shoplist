@@ -4,10 +4,12 @@ import axios from "axios";
 import ToggleButton from "./toggle_button";
 import ShopAddItem from "./shop_additem";
 import ShopItemList from "./shop_itemlist";
+import UserSettings from "./user_settings";
 
 export default function Content() {
   const [screenName, setScreenName] = useState("");
   const [showAdd, setShowAdd] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   let toggleText = showAdd ? "Close" : "Add";
 
   function userLogout() {
@@ -39,12 +41,22 @@ export default function Content() {
 
   return (
     <div>
-      <button onClick={userLogout}>Logout</button><br/>
-      <h1>ShopList - Track online shopping items</h1>
+      <button className="btn-margin" onClick={userLogout}>Logout</button>
+      <button
+        className="btn-margin"
+        onClick={() => {
+          setShowAdd(false);
+          setShowSettings(!showSettings);
+        }}
+      >Settings
+      </button><br/>
+      <h1>ShopList - Track online shop items</h1>
       <h2>Welcome back, {screenName}!</h2>
-      <ToggleButton text={toggleText} onToggle={() => setShowAdd(!showAdd)} /><br/>
+      {showSettings || <ToggleButton text={toggleText} onToggle={() => setShowAdd(!showAdd)} />}
+      {showSettings || <br/>}
       {showAdd && <ShopAddItem />}
-      <ShopItemList />
+      {showSettings || <ShopItemList />}
+      {showSettings && <UserSettings />}
     </div>
   )
 }

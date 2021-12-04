@@ -208,6 +208,7 @@ def user_price_history_update():
 
     sources = get_db_user_items(current_user)
     for source in sources:
+        print(f"source id: {source[0]}") #debug
         shop = get_db_shop(source[2])
         item, price, stamp_today = scrap_product_data(source[1], shop)
         if item == "Can't reach the url":
@@ -234,3 +235,7 @@ def get_user_items_history():
 
     result = get_db_user_items_history(current_user)
     return jsonify(result)
+
+@views.route("/settings", methods=["GET"])
+def user_settings():
+    return jsonify()

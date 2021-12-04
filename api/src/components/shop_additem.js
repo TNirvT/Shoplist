@@ -37,9 +37,7 @@ export default function ShopAddItem() {
       });
       setMessage(`Data received for ${res.data.item}: Latest Price ${res.data.price}`);
     }).catch(err => {
-      if (err) {
-        setMessage(err.message);
-      };
+      if (err) setMessage(err.message);
     });
   };
 

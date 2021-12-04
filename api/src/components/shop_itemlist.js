@@ -154,14 +154,14 @@ export default function ShopItemList() {
   return (
     <React.Fragment>
     <h2>Item List</h2>
-    <label htmlFor="itemSearch">Search</label>
+    {/* <label htmlFor="itemSearch">Search</label>
     <input
       type="text"
       id="itemSearch"
       name="itemSearch"
       placeholder="SEARCH"
       size="30"
-    /><br/>
+    /><br/> */}
     <ul>
       {itemList}
     </ul>

@@ -48,26 +48,39 @@ def _simple_tags(soup: BeautifulSoup, shop: str):
     }
 
     item = soup.find(TAGS[shop]["item"][0], attrs=TAGS[shop]["item"][1])
-    if item: item = item.text.strip()
+    if item:
+        item = item.text.strip()
+    else:
+        return None, None
     price_raw = soup.find(TAGS[shop]["price"][0], attrs=TAGS[shop]["price"][1])
     if price_raw: price_raw = price_raw.text.strip()
     return item, price_raw
 
 def _amazon_tags(soup: BeautifulSoup):
     item = soup.find("h1", attrs={"id": "title"})
-    if item: item = item.text.strip()
-    print("item", item) #debug
-    price_div = soup.find("div", attrs={"id": "corePrice_desktop"})
-    # print("priec_div", price_div) #debug
-    price_raw = price_div.find("span", attrs={"class": "a-price a-text-price a-size-medium apexPriceToPay"})
-    if price_raw: price_raw = price_raw.text.strip()
-    print("price_raw", price_raw) #debug
+    if item:
+        item = item.text.strip()
+    else:
+        return None, None
+    print(f"item: {item}") #debug
+    price_div = soup.find("div", attrs={"data-feature-name": "corePrice"})
+    print("price_div exists") #debug
+    if price_div:
+        price_raw = price_div.find("span", attrs={"class": "a-price a-text-price a-size-medium"})
+        if price_raw:
+            price_raw = price_raw.text.strip()
+            print(f"price_raw: {price_raw}") #debug
+    else:
+        price_raw = None
     return item, price_raw
 
 def _bestbuy_tags(soup: BeautifulSoup):
     item_div = soup.find("div", attrs={"class":"sku-title"})
     item = item_div.find("h1")
-    if item: item = item.text.strip()
+    if item:
+        item = item.text.strip()
+    else:
+        return None, None
     price_div = soup.find("div", attrs={"class":"priceView-hero-price priceView-customer-price"})
     price_raw = price_div.find("span", attrs={"aria-hidden":"true"})
     if price_raw: price_raw = price_raw.text.strip()
@@ -102,12 +115,11 @@ def scrap_product_data(url: str, shop: str):
         item, price_raw = _amazon_tags(soup)
     elif shop == "Best Buy":
         item, price_raw = _bestbuy_tags(soup)
-    
+
     offset = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
 
     # in case, out of stock
     if not price_raw:
-        # return item, None, datetime.now().strftime("%Y-%m-%d")
         return item, None, offset.timestamp()
 
     # remove the thousands separator
