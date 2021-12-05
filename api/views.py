@@ -236,6 +236,17 @@ def get_user_items_history():
     result = get_db_user_items_history(current_user)
     return jsonify(result)
 
-@views.route("/settings", methods=["GET"])
+@views.route("/settings", methods=["PUT"])
 def user_settings():
+    current_user = validate_user()
+    if not current_user: return redirect(url_for("views.index"))
+
+    r = request.get_json() # e.g. r = {"userName": "my name", "password": "321abc"}
+    user_name = r.get("userName")
+    password = r.get("password")
+    if password:
+        password_hash = generate_password_hash(password) # in format "method$salt$hash"
+    else:
+        password_hash = None
+    update_user_data(user_name, password_hash, current_user)
     return jsonify()

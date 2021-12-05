@@ -61,15 +61,15 @@ export default function UserCreation() {
     const newPw = e.target.value;
     if (rePw.test(newPw)) {
       setNewUser({...newUser, password: null});
-      setPasswordMessage(`Password must not contain white-space`);
+      setPasswordMessage("Password must not contain white-space");
       setValidateAll({...validateAll, password: false});
     } else if (newPw.length < 6) {
       setNewUser({...newUser, password: null});
-      setPasswordMessage(`Password must be at least 6 characters`);
+      setPasswordMessage("Password must be at least 6 characters");
       setValidateAll({...validateAll, password: false});
     } else {
       setNewUser({...newUser, password: newPw});
-      setPasswordMessage(`✔`);
+      setPasswordMessage("✔");
       setValidateAll({...validateAll, password: true});
     };
   };

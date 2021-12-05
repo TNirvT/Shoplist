@@ -243,3 +243,22 @@ def remove_product_from_user(product_id, user_id):
     # the corresponding source and price history will remain in database however
     cnx.commit()
     cur.close()
+
+def update_user_data(user_name, password_hash, current_user):
+    cur = cnx.cursor()
+    if user_name:
+        cur.execute(
+            """UPDATE users
+            SET user_name = %s
+            WHERE id = %s""",
+            (user_name, current_user,)
+        )
+    if password_hash:
+        cur.execute(
+            """UPDATE users
+            SET password_hash = %s
+            WHERE id = %s""",
+            (password_hash, current_user,)
+        )
+    cnx.commit()
+    cur.close()
