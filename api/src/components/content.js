@@ -41,15 +41,31 @@ export default function Content() {
 
   return (
     <div>
-      <button className="btn-margin" onClick={userLogout}>Logout</button>
-      <button
-        className="btn-margin"
-        onClick={() => {
-          setShowAdd(false);
-          setShowSettings(!showSettings);
-        }}
-      >Settings
-      </button><br/>
+      <nav className="navbar navbar-expand-md bg-secondary navbar-dark">
+        <div className="container">
+          <a href="#" className="navbar-brand">ShopList</a>
+          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navmenu">
+            <ul className="navbar-nav ms-auto">
+              <li className="nav-item">
+                <a href="#" className="nav-link" onClick={() => {
+                  userLogout();
+                  return false;
+                }}>Logout</a>
+              </li>
+              <li className="nav-item">
+                <a href="#" className="nav-link" onClick={() => {
+                  setShowAdd(false);
+                  setShowSettings(!showSettings);
+                  return false;
+                }}>Settings</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
       <h1>ShopList - Track online shop items</h1>
       <h2>Welcome back, {screenName}!</h2>
       {showSettings || <ToggleButton text={toggleText} onToggle={() => setShowAdd(!showAdd)} />}
