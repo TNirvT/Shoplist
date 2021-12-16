@@ -38,7 +38,7 @@ export default function Content() {
   }, []);
 
   return (
-    <div>
+    <React.Fragment>
       <nav className="navbar navbar-expand-md bg-secondary navbar-dark">
         <div className="container">
           <a href="#" className="navbar-brand">Welcome back, {screenName}!</a>
@@ -90,6 +90,11 @@ export default function Content() {
           </div>
         </div>
       </section>
-    </div>
+      <footer className="bg-dark text-white p-5 position-relative">
+        <div className="container">
+          <p>2021 <a href="https://github.com/TNirvT">TNirvT</a></p>
+        </div>
+      </footer>
+    </React.Fragment>
   )
 }
