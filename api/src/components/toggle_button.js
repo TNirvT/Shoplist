@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
-export default function ToggleButton({text, onToggle}) {
+export default function ToggleButton({text, onToggle, classN=null}) {
   return (
-    <button onClick={onToggle}>{text}</button>
+    <button className={classN} onClick={onToggle}>{text}</button>
   )
 }
 

@@ -169,8 +169,8 @@ export default function ShopItemList() {
       <div className="loader"></div>
     }
     <span>{message}</span><br/>
-    <button onClick={priceUpdate}>Price update(user's items)</button><br/>
-    <button onClick={getItemHistory}>Get Item History</button><br/>
+    <button className="btn btn-primary my-1" onClick={priceUpdate}>Price update(user's items)</button><br/>
+    <button className="btn btn-primary my-1" onClick={getItemHistory}>Get Item History</button><br/>
     {
       showChart &&
       <Line

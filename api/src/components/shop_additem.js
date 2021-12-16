@@ -74,7 +74,7 @@ export default function ShopAddItem() {
       onBlur={e => setNewItem({...newItem, url: e.target.value})}
     />
     <label htmlFor="product_url">URL</label><br/>
-    <button onClick={getProductData}>
+    <button className="btn btn-info" onClick={getProductData}>
       Get Product Data
     </button><br/>
     <span>Item: {newItem.item}</span><br/>
@@ -86,7 +86,7 @@ export default function ShopAddItem() {
       onBlur={e => setNewItem({...newItem, alias: e.target.value})}
     />
     <label htmlFor="product_name">Alias</label><br/>
-    <button onClick={addItemToDB}>
+    <button className="btn btn-danger" onClick={addItemToDB}>
       Add Item to DB
     </button><br/>
     <span>{message}</span>

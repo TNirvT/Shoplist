@@ -23,9 +23,7 @@ export default function Content() {
   };
 
   function getName() {
-    axios.get("/get_name", {
-      withCredentials: true
-    }).then(res => {
+    axios.get("/get_name").then(res => {
       setScreenName(res.data.user_name);
     }).catch(err => {
       if (err) {
@@ -43,7 +41,7 @@ export default function Content() {
     <div>
       <nav className="navbar navbar-expand-md bg-secondary navbar-dark">
         <div className="container">
-          <a href="#" className="navbar-brand">ShopList</a>
+          <a href="#" className="navbar-brand">Welcome back, {screenName}!</a>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -66,13 +64,32 @@ export default function Content() {
           </div>
         </div>
       </nav>
-      <h1>ShopList - Track online shop items</h1>
-      <h2>Welcome back, {screenName}!</h2>
-      {showSettings || <ToggleButton text={toggleText} onToggle={() => setShowAdd(!showAdd)} />}
-      {showSettings || <br/>}
-      {showAdd && <ShopAddItem />}
-      {showSettings || <ShopItemList />}
-      {showSettings && <UserSettings />}
+      <section className="bg-secondary text-light p-1 text-center">
+        <div className="container">
+          <div className="d-md-flex">
+            <div><h1>Shop<span className="text-warning">List</span></h1></div>
+            <div className="p-2"><h4> - Track online shop items</h4></div>
+          </div>
+        </div>
+      </section>
+      <section className="bg-warning text-dark p-1">
+        <div className="container">
+          <div>
+            {showSettings || <ToggleButton text={toggleText} onToggle={() => setShowAdd(!showAdd)} classN="btn btn-primary" />}
+          </div>
+          <div className="p-2">
+            {showAdd && <ShopAddItem />}
+          </div>
+        </div>
+      </section>
+      <section className="bg-light text-dark">
+        <div className="container">
+          <div>
+            {showSettings || <ShopItemList />}
+            {showSettings && <UserSettings />}
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
