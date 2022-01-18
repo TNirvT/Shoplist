@@ -10,7 +10,20 @@ export default function Home() {
 
   return (
     <div>
-      {signup || <UserLogin />}
+      <nav className="navbar navbar-expand-md bg-secondary navbar-dark">
+        <div className="container">
+        <a href="#" className="navbar-brand">Shop<span className="text-warning">List</span></a>
+        </div>
+      </nav>
+      <section className="bg-light text-dark">
+        <div className="container">
+          <div className="text-center">
+            <h1>The way to track prices</h1>
+            <h4>Make your own shoplist today.</h4>
+            {signup || <UserLogin />}
+          </div>
+        </div>
+      </section>
       <br/>
       <ToggleButton text={toogleText} onToggle={() => setSignup(!signup)} />
       <br/>

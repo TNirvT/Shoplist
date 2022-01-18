@@ -53,7 +53,6 @@ export default function UserLogin() {
 
   return (
     <React.Fragment>
-    <h1>Log in to track your items</h1>
       <input
         type="text"
         placeholder="Email"
@@ -66,10 +65,13 @@ export default function UserLogin() {
         name="password"
         onBlur={ e => setCredentials({ ...credentials, password: e.target.value.trim() }) }
       /><br/>
-    <button onClick={userLogin}>
-      Log in
-    </button><br/>
-    {message && <span>{message}</span>}
+      <button
+        className="btn btn-primary my-3"
+        onClick={userLogin}
+      >
+        Log in
+      </button><br/>
+      {message && <span>{message}</span>}
     </React.Fragment>
   )
 }

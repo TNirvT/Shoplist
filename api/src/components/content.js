@@ -41,7 +41,7 @@ export default function Content() {
     <React.Fragment>
       <nav className="navbar navbar-expand-md bg-secondary navbar-dark">
         <div className="container">
-          <a href="#" className="navbar-brand">Welcome back, {screenName}!</a>
+          <a href="#" className="navbar-brand">Shop<span className="text-warning">List</span></a>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -64,14 +64,6 @@ export default function Content() {
           </div>
         </div>
       </nav>
-      <section className="bg-secondary text-light p-1 text-center">
-        <div className="container">
-          <div className="d-md-flex">
-            <div><h1>Shop<span className="text-warning">List</span></h1></div>
-            <div className="p-2"><h4> - Track online shop items</h4></div>
-          </div>
-        </div>
-      </section>
       <section className="bg-warning text-dark p-1">
         <div className="container">
           <div>
