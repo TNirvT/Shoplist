@@ -55,10 +55,7 @@ export default function UserLogin({setSignup}) {
   return (
     <div className="d-flex flex-column">
       <div className="mx-auto w-50 m-2">
-        <label
-          htmlFor="email"
-          className="form-label"
-        >
+        <label htmlFor="email" className="form-label">
           Email Address
         </label>
         <input
@@ -70,10 +67,7 @@ export default function UserLogin({setSignup}) {
         />
       </div>
       <div className="mx-auto w-50 m-2">
-        <label
-          htmlFor="password"
-          className="form-label"
-        >
+        <label htmlFor="password" className="form-label">
           Password
         </label>
         <input
@@ -84,7 +78,10 @@ export default function UserLogin({setSignup}) {
           onBlur={ e => setCredentials({ ...credentials, password: e.target.value.trim() }) }
         />
       </div>
-      <div className="row mx-auto w-50 m-2 text-center">
+      <div className="row mx-auto w-50 m-1 text-danger fst-italic">
+        {message && <span>{message}</span>}
+      </div>
+      <div className="row mx-auto w-50 m-1 text-center">
         <div className="col align-self-center">
           <button
             className="btn btn-primary my-2"
@@ -92,7 +89,6 @@ export default function UserLogin({setSignup}) {
           >
             Log in
           </button>
-          {message && <span>{message}</span>}
         </div>
         <div className="col">
           <ToggleButton

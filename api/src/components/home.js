@@ -22,7 +22,7 @@ export default function Home() {
       <section className="bg-light text-dark p-1">
         <div className="container">
           {signup || <UserLogin setSignup={setSignup} />}
-          {signup && <UserCreation />}
+          {signup && <UserCreation setSignup={setSignup} />}
         </div>
       </section>
     </div>

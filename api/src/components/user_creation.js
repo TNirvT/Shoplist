@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
+import ToggleButton from "./toggle_button";
 
-export default function UserCreation() {
+export default function UserCreation({setSignup}) {
   const [newUser, setNewUser] = useState({});
   const [nameMessage, setNameMessage] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
@@ -98,32 +99,83 @@ export default function UserCreation() {
 
   return (
     <div className="d-flex flex-column">
-      <h3>Create an account</h3>
-      <input
-        type="text"
-        placeholder="Name"
-        name="userName"
-        onBlur={nameCheck}
-      /><br/>
-      {nameMessage && <div><span>{nameMessage}</span></div>}
-      <input
-        type="text"
-        placeholder="Email"
-        name="userEmail"
-        onBlur={emailExistsCheck}
-      /><br/>
-      {emailMessage && <div><span>{emailMessage}</span></div>}
-      <input
-        type="password"
-        placeholder="Password"
-        name="password"
-        onBlur={passwordCheck}
-        /><br/>
-      {passwordMessage && <div><span>{passwordMessage}</span></div>}
-      <button onClick={createUser}>
-        Next
-      </button>
-      {message && <div><span>{message}</span></div>}
+      <div className="text-center text-info fs-3">
+        Create new account
+      </div>
+      <div className="mx-auto w-50 m-2">
+        <label htmlFor="newUserName" className="form-label">
+          User Name
+        </label>
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Name"
+          id="newUserName"
+          onBlur={nameCheck}
+        />
+        {
+          nameMessage &&
+          <div className="text-danger fst-italic">
+            <span>{nameMessage}</span>
+          </div>
+        }
+      </div>
+      <div className="mx-auto w-50 m-2">
+        <label htmlFor="newUserEmail" className="form-label">
+          Email Address
+        </label>
+        <input
+          type="text"
+          className="form-control"
+          placeholder="you@example.com"
+          id="newUserEmail"
+          onBlur={emailExistsCheck}
+        />
+        {
+          emailMessage &&
+          <div className="text-danger fst-italic">
+            <span>{emailMessage}</span>
+          </div>
+        }
+      </div>
+      <div className="mx-auto w-50 m-2">
+        <label htmlFor="newPassword" className="form-label">
+          Password
+        </label>
+        <input
+          type="password"
+          className="form-control"
+          placeholder="secret***"
+          id="newPassword"
+          onBlur={passwordCheck}
+        />
+        {
+          passwordMessage &&
+          <div className="text-danger fst-italic">
+            <span>{passwordMessage}</span>
+          </div>
+        }
+      </div>
+      <div className="row mx-auto w-50 m-1 text-warning text-center">
+        {message && <span>{message}</span>}
+      </div>
+      <div className="row mx-auto w-50 m-1 text-center">
+        <div className="col align-self-center">
+          <button
+            className="btn btn-info my-2"
+            onClick={createUser}
+          >
+            Sign Up
+          </button>
+        </div>
+        <div className="col">
+          <ToggleButton
+            text="Existing user? Login"
+            onToggle={() => setSignup(false)}
+            className={"btn btn-primary my-2"}
+          />
+        </div>
+      </div>
     </div>
   )
 }
