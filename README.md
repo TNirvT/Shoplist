@@ -19,10 +19,7 @@ react (17.0.2)
 axios (0.21.4)  
 react-chartjs-2 (3.3.0)  
 ____
-____
 
 > ## ToDo:  
 > - Add delete function to remove a product
 > - Add search function in user item list
-> - Add option to add new source to existing item in database.  
-> - Add option to change user details (name, password, etc.).  
