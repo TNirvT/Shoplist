@@ -97,33 +97,33 @@ export default function UserCreation() {
   };
 
   return (
-    <React.Fragment>
-    <h1>Create an account</h1>
-    <input
-      type="text"
-      placeholder="Name"
-      name="userName"
-      onBlur={nameCheck}
-    /><br/>
-    {nameMessage && <div><span>{nameMessage}</span></div>}
-    <input
-      type="text"
-      placeholder="Email"
-      name="userEmail"
-      onBlur={emailExistsCheck}
-    /><br/>
-    {emailMessage && <div><span>{emailMessage}</span></div>}
-    <input
-      type="password"
-      placeholder="Password"
-      name="password"
-      onBlur={passwordCheck}
+    <div className="d-flex flex-column">
+      <h3>Create an account</h3>
+      <input
+        type="text"
+        placeholder="Name"
+        name="userName"
+        onBlur={nameCheck}
       /><br/>
-    {passwordMessage && <div><span>{passwordMessage}</span></div>}
-    <button onClick={createUser}>
-      Next
-    </button>
-    {message && <div><span>{message}</span></div>}
-    </React.Fragment>
+      {nameMessage && <div><span>{nameMessage}</span></div>}
+      <input
+        type="text"
+        placeholder="Email"
+        name="userEmail"
+        onBlur={emailExistsCheck}
+      /><br/>
+      {emailMessage && <div><span>{emailMessage}</span></div>}
+      <input
+        type="password"
+        placeholder="Password"
+        name="password"
+        onBlur={passwordCheck}
+        /><br/>
+      {passwordMessage && <div><span>{passwordMessage}</span></div>}
+      <button onClick={createUser}>
+        Next
+      </button>
+      {message && <div><span>{message}</span></div>}
+    </div>
   )
 }

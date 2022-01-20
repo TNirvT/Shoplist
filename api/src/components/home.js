@@ -15,19 +15,16 @@ export default function Home() {
         <a href="#" className="navbar-brand">Shop<span className="text-warning">List</span></a>
         </div>
       </nav>
-      <section className="bg-light text-dark">
+      <section className="bg-light text-dark p-1">
+        <h1 className="text-center">The way to price track</h1>
+        <h4 className="text-center">Make your own shoplist today.</h4>
+      </section>
+      <section className="bg-light text-dark p-1">
         <div className="container">
-          <div className="text-center">
-            <h1>The way to track prices</h1>
-            <h4>Make your own shoplist today.</h4>
-            {signup || <UserLogin />}
-          </div>
+          {signup || <UserLogin setSignup={setSignup} />}
+          {signup && <UserCreation />}
         </div>
       </section>
-      <br/>
-      <ToggleButton text={toogleText} onToggle={() => setSignup(!signup)} />
-      <br/>
-      {signup && <UserCreation />}
     </div>
   )
 }

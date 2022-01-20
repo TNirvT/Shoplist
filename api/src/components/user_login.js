@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
+import ToggleButton from "./toggle_button";
 
-export default function UserLogin() {
+export default function UserLogin({setSignup}) {
   const [credentials, setCredentials] = useState({});
   const [message, setMessage] = useState("");
   const [emailExists, setEmailExists] = useState(false);
@@ -52,26 +53,55 @@ export default function UserLogin() {
   };
 
   return (
-    <React.Fragment>
-      <input
-        type="text"
-        placeholder="Email"
-        name="email"
-        onBlur={emailExistsCheck}
-        /><br/>
-      <input
-        type="password"
-        placeholder="Password"
-        name="password"
-        onBlur={ e => setCredentials({ ...credentials, password: e.target.value.trim() }) }
-      /><br/>
-      <button
-        className="btn btn-primary my-3"
-        onClick={userLogin}
-      >
-        Log in
-      </button><br/>
-      {message && <span>{message}</span>}
-    </React.Fragment>
+    <div className="d-flex flex-column">
+      <div className="mx-auto w-50 m-2">
+        <label
+          htmlFor="email"
+          className="form-label"
+        >
+          Email Address
+        </label>
+        <input
+          type="email"
+          className="form-control"
+          placeholder="you@example.com"
+          id="email"
+          onBlur={emailExistsCheck}
+        />
+      </div>
+      <div className="mx-auto w-50 m-2">
+        <label
+          htmlFor="password"
+          className="form-label"
+        >
+          Password
+        </label>
+        <input
+          type="password"
+          className="form-control"
+          placeholder="secret***"
+          id="password"
+          onBlur={ e => setCredentials({ ...credentials, password: e.target.value.trim() }) }
+        />
+      </div>
+      <div className="row mx-auto w-50 m-2 text-center">
+        <div className="col align-self-center">
+          <button
+            className="btn btn-primary my-2"
+            onClick={userLogin}
+          >
+            Log in
+          </button>
+          {message && <span>{message}</span>}
+        </div>
+        <div className="col">
+          <ToggleButton
+            text="New user? SignUp"
+            onToggle={() => setSignup(true)}
+            className={"btn btn-info my-2"}
+          />
+        </div>
+      </div>
+    </div>
   )
 }
