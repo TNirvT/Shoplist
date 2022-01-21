@@ -5,6 +5,7 @@ import ToggleButton from "./toggle_button";
 import ShopAddItem from "./shop_additem";
 import ShopItemList from "./shop_itemlist";
 import UserSettings from "./user_settings";
+import Footer from "./footer";
 
 export default function Content() {
   const [screenName, setScreenName] = useState("");
@@ -82,11 +83,7 @@ export default function Content() {
           </div>
         </div>
       </section>
-      <footer className="bg-dark text-white p-5 position-relative">
-        <div className="container">
-          <p>2021 <a href="https://github.com/TNirvT">TNirvT</a></p>
-        </div>
-      </footer>
+      <Footer />
     </React.Fragment>
   )
 }

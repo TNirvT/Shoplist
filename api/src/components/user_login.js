@@ -54,6 +54,9 @@ export default function UserLogin({setSignup}) {
 
   return (
     <div className="d-flex flex-column">
+      <div className="text-center text-primary fs-3">
+        Login to account
+      </div>
       <div className="mx-auto w-50 m-2">
         <label htmlFor="email" className="form-label">
           Email Address
@@ -83,10 +86,7 @@ export default function UserLogin({setSignup}) {
       </div>
       <div className="row mx-auto w-50 m-1 text-center">
         <div className="col align-self-center">
-          <button
-            className="btn btn-primary my-2"
-            onClick={userLogin}
-          >
+          <button className="btn btn-primary my-2" onClick={userLogin}>
             Log in
           </button>
         </div>
