@@ -77,10 +77,8 @@ export default function Content() {
       </section>
       <section className="bg-light text-dark">
         <div className="container">
-          <div>
-            {showSettings || <ShopItemList />}
-            {showSettings && <UserSettings />}
-          </div>
+          {showSettings || <ShopItemList />}
+          {showSettings && <UserSettings />}
         </div>
       </section>
       <Footer />

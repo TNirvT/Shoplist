@@ -84,8 +84,8 @@ def get_db_user_items_detailed(user_id) -> list[dict]:
         (user_id,)
     )
     sources = cur.fetchall()
-    # print(*sources, sep="\n") #debug
-    # sources arr=[
+    # returns a list of dictionaries
+    # sources = [
     #     {'product_id':int, 'item_name':str, 'user_alias':str,
     #     'source_id':int, 'url':str, 'shop':str,
     #     'latest_on':datetime.date, 'price':decimal.Decimal},

@@ -4,39 +4,31 @@ import { Line } from "react-chartjs-2";
 
 export default function ShopItemList() {
   const [message, setMessage] = useState("");
-  const [itemList, setItemList] = useState([]);
+  const [itemList, setItemList] = useState(null);
   const [chartDataSets, setChartDataSets] = useState([]);
   const [showChart, setShowChart] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  let rowsArr = []
+  if (itemList) {
+    rowsArr = itemList.map((item) =>
+      <tr key={item.source_id.toString()}>
+        <td>
+          {item.item_name}<br/>
+          <a href={item.url} className="link-primary">{item.shop}</a>
+          <span className="deleteBtn" onClick={() => onDelete(item.product_id)}>delete</span>
+        </td>
+        <td>$ {item.price}</td>
+      </tr>
+    )
+  } else {
+    rowsArr = []
+  };
+
   function loadItemList() {
     setLoading(true);
     axios.get("/list_user_items").then(res => {
-      const userItems = res.data;
-      let arr = userItems.map((item) =>
-        <li key={item.source_id.toString()}>
-          {item.item_name.substring(0,35)}
-          {item.item_name.length > 35 && "..."}
-          <ul style={{listStyleType: "none"}}>
-            <li>
-              <input
-                type="checkbox"
-                id={item.source_id.toString()}
-                name={item.source_id.toString()}
-              />
-              <label htmlFor={item.source_id.toString()}>
-                {item.shop}
-                {" : $"}
-                {item.price}
-              </label>
-              <span className="deleteBtn" onClick={() => onDelete(item.product_id)}>
-                delete
-              </span>
-            </li>
-          </ul>
-        </li>
-      );
-      setItemList(arr);
+      setItemList(res.data);
       setLoading(false);
     }).catch(err => {
       if (err) setMessage(err.message);
@@ -152,41 +144,42 @@ export default function ShopItemList() {
   }, []);
 
   return (
-    <React.Fragment>
-    <h2>Item List</h2>
-    {/* <label htmlFor="itemSearch">Search</label>
-    <input
-      type="text"
-      id="itemSearch"
-      name="itemSearch"
-      placeholder="SEARCH"
-      size="30"
-    /><br/> */}
-    <ul>
-      {itemList}
-    </ul>
-    {loading &&
-      <div className="loader"></div>
-    }
-    <span>{message}</span><br/>
-    <button className="btn btn-primary my-1" onClick={priceUpdate}>Price update(user's items)</button><br/>
-    <button className="btn btn-primary my-1" onClick={getItemHistory}>Get Item History</button><br/>
-    {
-      showChart &&
-      <Line
-        data={{
-          labels: daysLabelArr,
-          datasets: chartDataSets
-        }}
-        width={500}
-        height={200}
-        options={{
-          scales: {
-            y: {beginAtZero: true}
-          }
-        }}
-      />
-    }
-    </React.Fragment>
+    <div>
+      <div className="d-flex justify-content-between">
+        <div className="my-2">
+          <h3>Tracking Items</h3>
+        </div>
+        <div className="my-2">
+          <button className="btn btn-primary">⨁&nbsp;&nbsp;Add</button>
+        </div>
+      </div>
+      <div className="m-2">
+        <table className="table table-striped table-hover">
+          <tbody>{rowsArr}</tbody>
+        </table>
+      </div>
+      {loading &&
+        <div className="loader"></div>
+      }
+      <span>{message}</span><br/>
+      <button className="btn btn-primary my-1" onClick={priceUpdate}>Price update(user's items)</button><br/>
+      <button className="btn btn-primary my-1" onClick={getItemHistory}>Get Item History</button><br/>
+      {
+        showChart &&
+        <Line
+          data={{
+            labels: daysLabelArr,
+            datasets: chartDataSets
+          }}
+          width={500}
+          height={200}
+          options={{
+            scales: {
+              y: {beginAtZero: true}
+            }
+          }}
+        />
+      }
+    </div>
   )
 }
