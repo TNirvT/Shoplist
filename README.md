@@ -18,8 +18,11 @@ mysql-connector-python (8.0.26)
 react (17.0.2)  
 axios (0.21.4)  
 react-chartjs-2 (3.3.0)  
+  
+## **Known Issues:**
 ____
+- Only per month price can be retrieved for some items on BestBuy  
 
 > ## ToDo:  
-> - Add delete function to remove a product
+> ____
 > - Add search function in user item list
