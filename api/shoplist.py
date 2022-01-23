@@ -63,10 +63,10 @@ def _amazon_tags(soup: BeautifulSoup):
     else:
         return None, None
     print(f"item: {item}") #debug
-    price_div = soup.find("div", attrs={"data-feature-name": "corePrice"})
+    price_div = soup.find("div", attrs={"data-feature-name": "corePrice_desktop"})
     print("price_div exists") #debug
     if price_div:
-        price_raw = price_div.find("span", attrs={"class": "a-price a-text-price a-size-medium"})
+        price_raw = price_div.find("span", attrs={"class": "a-price a-text-price a-size-medium apexPriceToPay"})
         if price_raw:
             price_raw = price_raw.text.strip()
             print(f"price_raw: {price_raw}") #debug
