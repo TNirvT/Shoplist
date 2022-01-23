@@ -65,19 +65,10 @@ export default function Content() {
           </div>
         </div>
       </nav>
-      <section className="bg-warning text-dark p-1">
-        <div className="container">
-          <div>
-            {showSettings || <ToggleButton text={toggleText} onToggle={() => setShowAdd(!showAdd)} classN="btn btn-primary" />}
-          </div>
-          <div className="p-2">
-            {showAdd && <ShopAddItem />}
-          </div>
-        </div>
-      </section>
+      {showAdd && <ShopAddItem setShowAdd={() => setShowAdd(!showAdd)}/>}
       <section className="bg-light text-dark">
         <div className="container">
-          {showSettings || <ShopItemList />}
+          {showSettings || <ShopItemList setShowAdd={() => setShowAdd(!showAdd)} />}
           {showSettings && <UserSettings />}
         </div>
       </section>

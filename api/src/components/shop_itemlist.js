@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Line } from "react-chartjs-2";
 
-export default function ShopItemList() {
+export default function ShopItemList({setShowAdd}) {
   const [message, setMessage] = useState("");
   const [itemList, setItemList] = useState(null);
   const [chartDataSets, setChartDataSets] = useState([]);
@@ -13,12 +13,12 @@ export default function ShopItemList() {
   if (itemList) {
     rowsArr = itemList.map((item) =>
       <tr key={item.source_id.toString()}>
-        <td>
+        <td className="overflow-hidden" style={{width:"80%"}}>
           {item.item_name}<br/>
-          <a href={item.url} className="link-primary">{item.shop}</a>
-          <span className="deleteBtn" onClick={() => onDelete(item.product_id)}>delete</span>
+          <a href={item.url} className="link-primary mx-2" target="_blank">{item.shop}</a>
+          <span className="deleteBtn fst-italic mx-3" onClick={() => onDelete(item.product_id)}>delete</span>
         </td>
-        <td>$ {item.price}</td>
+        <td style={{width:"20%"}}>${item.price}</td>
       </tr>
     )
   } else {
@@ -150,7 +150,7 @@ export default function ShopItemList() {
           <h3>Tracking Items</h3>
         </div>
         <div className="my-2">
-          <button className="btn btn-primary">⨁&nbsp;&nbsp;Add</button>
+          <button className="btn btn-primary" onClick={setShowAdd}>⨁&nbsp;&nbsp;Add</button>
         </div>
       </div>
       <div className="m-2">
@@ -158,7 +158,8 @@ export default function ShopItemList() {
           <tbody>{rowsArr}</tbody>
         </table>
       </div>
-      {loading &&
+      {
+        loading &&
         <div className="loader"></div>
       }
       <span>{message}</span><br/>

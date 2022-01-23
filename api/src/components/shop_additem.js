@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-export default function ShopAddItem() {
+import plusCircle from "../plus-circle.svg";
+
+export default function ShopAddItem({setShowAdd}) {
   const [message, setMessage] = useState("");
   const [newItem, setNewItem] = useState({
     url: "",
@@ -66,30 +68,43 @@ export default function ShopAddItem() {
   };
 
   return (
-    <React.Fragment>
-    <input
-      type="text"
-      id="product_url"
-      placeholder="URL"
-      onBlur={e => setNewItem({...newItem, url: e.target.value})}
-    />
-    <label htmlFor="product_url">URL</label><br/>
-    <button className="btn btn-info" onClick={getProductData}>
-      Get Product Data
-    </button><br/>
-    <span>Item: {newItem.item}</span><br/>
-    <span>Price: {newItem.price}</span><br/>
-    <input
-      type="text"
-      id="user_alias"
-      placeholder="Item name Alias"
-      onBlur={e => setNewItem({...newItem, alias: e.target.value})}
-    />
-    <label htmlFor="product_name">Alias</label><br/>
-    <button className="btn btn-danger" onClick={addItemToDB}>
-      Add Item to DB
-    </button><br/>
-    <span>{message}</span>
-    </React.Fragment>
+    <section className="bg-warning text-dark p-1">
+      <div className="container">
+        <div className="d-flex justify-content-between">
+          <div>
+            <img src={plusCircle} alt="Add item icon" width="70" className="p-3"/>
+          </div>
+          <div>
+            <button className="btn btn-primary" onClick={setShowAdd}>⟲ Back</button>
+          </div>
+        </div>
+        <div>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="URL"
+            id="product_url"
+            onBlur={e => setNewItem({...newItem, url: e.target.value})}
+          />
+          <label htmlFor="product_url">URL</label><br/>
+          <button className="btn btn-info" onClick={getProductData}>
+            Get Product Data
+          </button><br/>
+          <span>Item: {newItem.item}</span><br/>
+          <span>Price: {newItem.price}</span><br/>
+          <input
+            type="text"
+            id="user_alias"
+            placeholder="Item name Alias"
+            onBlur={e => setNewItem({...newItem, alias: e.target.value})}
+            />
+          <label htmlFor="product_name">Alias</label><br/>
+          <button className="btn btn-danger" onClick={addItemToDB}>
+            Add Item to DB
+          </button><br/>
+          <span>{message}</span>
+        </div>
+      </div>
+    </section>
   )
 }
