@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-import ToggleButton from "./toggle_button";
 import ShopAddItem from "./shop_additem";
 import ShopItemList from "./shop_itemlist";
 import UserSettings from "./user_settings";
@@ -9,9 +8,9 @@ import Footer from "./footer";
 
 export default function Content() {
   const [screenName, setScreenName] = useState("");
+  const [showList, setShowList] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  let toggleText = showAdd ? "Close" : "Add";
 
   function userLogout() {
     axios.post("/logout").then(res => {
@@ -57,6 +56,7 @@ export default function Content() {
               <li className="nav-item">
                 <a href="#" className="nav-link" onClick={() => {
                   setShowAdd(false);
+                  setShowList(showSettings);
                   setShowSettings(!showSettings);
                   return false;
                 }}>Settings</a>
@@ -65,13 +65,34 @@ export default function Content() {
           </div>
         </div>
       </nav>
-      {showAdd && <ShopAddItem setShowAdd={() => setShowAdd(!showAdd)}/>}
-      <section className="bg-light text-dark">
-        <div className="container">
-          {showSettings || <ShopItemList setShowAdd={() => setShowAdd(!showAdd)} />}
-          {showSettings && <UserSettings />}
-        </div>
-      </section>
+      {
+        showList &&
+        <ShopItemList
+          setShowAdd={() => {
+            setShowAdd(true);
+            setShowList(false);
+          }}
+        />
+      }
+      {
+        showAdd &&
+        <ShopAddItem
+          setShowAdd={() => {
+            setShowAdd(false);
+            setShowList(true);
+          }}
+        />
+      }
+      {
+        showSettings &&
+        <UserSettings
+          setShowContent={() => {
+            setShowList(true);
+            setShowSettings(false);
+          }}
+          screenName={screenName}
+        />
+      }
       <Footer />
     </React.Fragment>
   )

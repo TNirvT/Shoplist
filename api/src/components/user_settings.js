@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-export default function UserSettings() {
+export default function UserSettings({setShowContent, screenName}) {
   const [userChanges, setUserChanges] = useState({});
   const [passwordMessage, setPasswordMessage] = useState("");
   const [message, setMessage] = useState("");
@@ -34,47 +34,66 @@ export default function UserSettings() {
   };
 
   return (
+    <section className="bg-secondary text-light p-2">
+      <div className="container">
+        <div className="d-flex justify-content-between">
+          <div className="my-2">
+            <h3>Settings</h3>
+          </div>
+          <div className="my-2">
+            <button className="btn btn-primary" onClick={setShowContent}>⟲ Back</button>
+          </div>
+        </div>
+        <div>
+          <label htmlFor="userName" className="form-label">
+            New User Name
+          </label>
+          <input
+            type="text"
+            className=""
+            placeholder={screenName}
+            style={{maxWidth: 300}}
+            id="userName"
+            onBlur={(e) => {
+              if (e.target.value.length > 0) {
+                setUserChanges({...userChanges, userName: e.target.value.trim()})
+              } else {
+                setUserChanges((savedChanges) => {
+                  const changes = {...savedChanges};
+                  delete changes.userName;
+                  return changes
+                })
+              }
+            }}
+          />
+        </div>
+        <div>
+          <label htmlFor="password" className="form-label">
+            New Password
+          </label>testing123
+          <input
+            type="password"
+            placeholder="something*secret"
+            id="password"
+            onBlur={(e) => {
+              if (passwordCheck(e)) {
+                setUserChanges({...userChanges, password: e.target.value.trim()})
+              } else {
+                setUserChanges((savedChanges) => {
+                  const changes = {...savedChanges};
+                  delete changes.password;
+                  return changes
+                })
+              }
+            }}
+          />
+        </div>
+        <button onClick={changeSettings}>Apply Changes</button>
+      </div>
     <div>
-    <h2>Settings</h2>
-    <label htmlFor="userName">User Name</label><br/>
-    <input
-      type="text"
-      placeholder="User Name"
-      id="userName"
-      name="userName"
-      onBlur={(e) => {
-        if (e.target.value.length > 0) {
-          setUserChanges({...userChanges, userName: e.target.value.trim()})
-        } else {
-          setUserChanges((savedChanges) => {
-            const changes = {...savedChanges};
-            delete changes.userName;
-            return changes
-          })
-        }
-      }}
-    /><br/>
-    <label htmlFor="password">Password</label><br/>
-    <input
-      type="password"
-      placeholder="Password"
-      id="password"
-      name="password"
-      onBlur={(e) => {
-        if (passwordCheck(e)) {
-          setUserChanges({...userChanges, password: e.target.value.trim()})
-        } else {
-          setUserChanges((savedChanges) => {
-            const changes = {...savedChanges};
-            delete changes.password;
-            return changes
-          })
-        }
-      }}
-    /><br/>
     {passwordMessage && <div><span>{passwordMessage}</span></div>}
-    <button onClick={changeSettings}>Apply Changes</button>
     {message && <div><span>{message}</span></div>}
     </div>
+    </section>
   )
 }

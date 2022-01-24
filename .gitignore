@@ -134,4 +134,4 @@ dmypy.json
 # npm/react
 *.bundle.js
 node_modules/
-static/images/
+static/

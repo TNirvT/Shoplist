@@ -144,43 +144,45 @@ export default function ShopItemList({setShowAdd}) {
   }, []);
 
   return (
-    <div>
-      <div className="d-flex justify-content-between">
-        <div className="my-2">
-          <h3>Tracking Items</h3>
+    <section className="bg-light text-dark p-2">
+      <div className="container">
+        <div className="d-flex justify-content-between">
+          <div className="my-2">
+            <h3>Tracking Items</h3>
+          </div>
+          <div className="my-2">
+            <button className="btn btn-primary" onClick={setShowAdd}>⨁&nbsp;&nbsp;Add</button>
+          </div>
         </div>
-        <div className="my-2">
-          <button className="btn btn-primary" onClick={setShowAdd}>⨁&nbsp;&nbsp;Add</button>
+        <div className="m-2">
+          <table className="table table-striped table-hover">
+            <tbody>{rowsArr}</tbody>
+          </table>
         </div>
+        {
+          loading &&
+          <div className="loader"></div>
+        }
+        <span>{message}</span><br/>
+        <button className="btn btn-primary my-1" onClick={priceUpdate}>Price update(user's items)</button><br/>
+        <button className="btn btn-primary my-1" onClick={getItemHistory}>Get Item History</button><br/>
+        {
+          showChart &&
+          <Line
+            data={{
+              labels: daysLabelArr,
+              datasets: chartDataSets
+            }}
+            width={500}
+            height={200}
+            options={{
+              scales: {
+                y: {beginAtZero: true}
+              }
+            }}
+          />
+        }
       </div>
-      <div className="m-2">
-        <table className="table table-striped table-hover">
-          <tbody>{rowsArr}</tbody>
-        </table>
-      </div>
-      {
-        loading &&
-        <div className="loader"></div>
-      }
-      <span>{message}</span><br/>
-      <button className="btn btn-primary my-1" onClick={priceUpdate}>Price update(user's items)</button><br/>
-      <button className="btn btn-primary my-1" onClick={getItemHistory}>Get Item History</button><br/>
-      {
-        showChart &&
-        <Line
-          data={{
-            labels: daysLabelArr,
-            datasets: chartDataSets
-          }}
-          width={500}
-          height={200}
-          options={{
-            scales: {
-              y: {beginAtZero: true}
-            }
-          }}
-        />
-      }
-    </div>
+    </section>
   )
 }
