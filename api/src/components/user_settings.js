@@ -44,15 +44,15 @@ export default function UserSettings({setShowContent, screenName}) {
             <button className="btn btn-primary" onClick={setShowContent}>⟲ Back</button>
           </div>
         </div>
-        <div>
+        <div className="my-1">
           <label htmlFor="userName" className="form-label">
             New User Name
           </label>
           <input
             type="text"
-            className=""
-            placeholder={screenName}
+            className="form-control"
             style={{maxWidth: 300}}
+            placeholder={screenName}
             id="userName"
             onBlur={(e) => {
               if (e.target.value.length > 0) {
@@ -67,12 +67,14 @@ export default function UserSettings({setShowContent, screenName}) {
             }}
           />
         </div>
-        <div>
+        <div className="my-1">
           <label htmlFor="password" className="form-label">
             New Password
-          </label>testing123
+          </label>
           <input
             type="password"
+            className="form-control"
+            style={{maxWidth: 300}}
             placeholder="something*secret"
             id="password"
             onBlur={(e) => {
@@ -87,11 +89,13 @@ export default function UserSettings({setShowContent, screenName}) {
               }
             }}
           />
+          {passwordMessage && <span className="text-warning fst-italic">{passwordMessage}</span>}
         </div>
-        <button onClick={changeSettings}>Apply Changes</button>
+        <button className="btn btn-danger my-2" onClick={changeSettings}>
+          Apply Changes
+        </button>
       </div>
     <div>
-    {passwordMessage && <div><span>{passwordMessage}</span></div>}
     {message && <div><span>{message}</span></div>}
     </div>
     </section>
