@@ -6,6 +6,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, jsonif
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import cnx
+from . import cursor
 from .data import *
 from .shoplist import url_parser, scrap_product_data
 
@@ -24,7 +25,7 @@ def login():
     email = request.get_json()["email"]
     password = request.get_json()["password"]
 
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute(
         "SELECT password_hash, id FROM users WHERE email = (%s)",
         (email,)
@@ -51,7 +52,7 @@ def user_logout():
 def check_existing_email():
     new_email = request.args.get("new_email")
 
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute(
         "SELECT email FROM users WHERE email = %s",
         (new_email,)
@@ -71,7 +72,7 @@ def user_creation():
     if not p.match(user_email):
         return "Invalid user email", 403
 
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute(
         "SELECT email FROM users WHERE email = %s",
         (user_email,)
@@ -129,7 +130,7 @@ def content():
 def get_name():
     if not validate_user(): return redirect(url_for("views.index"))
 
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute(
         "SELECT user_name FROM users WHERE id = %s",
         (session["user_id"],)

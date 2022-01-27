@@ -2,9 +2,10 @@
 from datetime import datetime, timezone, date
 from decimal import Decimal
 from . import cnx
+from . import cursor
 
 def check_existing_source(url):
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute(
         """SELECT p.id, p.user_id, p.item_name, s.id
         FROM products p
@@ -18,14 +19,14 @@ def check_existing_source(url):
     return result
 
 def get_db_product(product_id):
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute("SELECT item_name, user_id FROM products WHERE id = %s", (product_id,))
     result = cur.fetchone()[0]
     cur.close()
     return result
 
 def get_db_latest_price(source_id) -> tuple[float, float]:
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute(
         """SELECT price, date FROM price_history WHERE source_id = %s
         ORDER BY date DESC LIMIT 1""",
@@ -39,21 +40,21 @@ def get_db_latest_price(source_id) -> tuple[float, float]:
     return price, latest_utc
 
 def get_db_shop(shop_id: int) -> str:
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute("SELECT shop FROM shops WHERE id = %s", (shop_id,))
     shop = cur.fetchone()[0]
     cur.close()
     return shop
 
 def get_db_shopid(shop: str) -> int:
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute("SELECT id FROM shops WHERE shop = %s", (shop,))
     shop_id = cur.fetchone()[0]
     cur.close()
     return shop_id
 
 def get_db_user_items(user_id) -> list[tuple[int, str, int]]:
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute(
         """SELECT s.id, s.url, s.shop_id
         FROM sources s
@@ -101,7 +102,7 @@ def get_db_user_items_detailed(user_id) -> list[dict]:
     return sources
 
 def get_db_user_items_history(user_id) -> list[dict]:
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     # extract list of source ids
     cur.execute(
         """SELECT s.id, p.item_name, p.user_alias
@@ -156,7 +157,7 @@ def get_db_user_items_history(user_id) -> list[dict]:
 
 def add_product(url, shop_id, user_id, item_name, alias, stamp_today, price):
     date_utc = datetime.fromtimestamp(stamp_today, timezone.utc).strftime("%Y-%m-%d")
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute(
         """INSERT INTO sources (url, shop_id)
         VALUES (%s, %s)""",
@@ -182,7 +183,7 @@ def add_product(url, shop_id, user_id, item_name, alias, stamp_today, price):
     cur.close()
 
 def add_product_w_existing_source(user_id, item_name, alias, source_id):
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute(
         """INSERT INTO products (user_id, item_name, user_alias, brand, type)
         VALUES (%s, %s, %s, DEFAULT, DEFAULT)""",
@@ -197,7 +198,7 @@ def add_product_w_existing_source(user_id, item_name, alias, source_id):
 
 def update_today_price(price, source_id, stamp_today):
     date_utc = datetime.fromtimestamp(stamp_today, timezone.utc).strftime("%Y-%m-%d")
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute(
         """UPDATE price_history
         SET price = %s
@@ -209,7 +210,7 @@ def update_today_price(price, source_id, stamp_today):
 
 def add_today_price(price, source_id, stamp_today):
     date_utc = datetime.fromtimestamp(stamp_today, timezone.utc).strftime("%Y-%m-%d")
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute(
         """INSERT INTO price_history (source_id, date, price)
         VALUES (%s, %s, %s)""",
@@ -219,7 +220,7 @@ def add_today_price(price, source_id, stamp_today):
     cur.close()
 
 def remove_product_from_user(product_id, user_id):
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute(
         """SELECT user_id
         FROM products
@@ -245,7 +246,7 @@ def remove_product_from_user(product_id, user_id):
     cur.close()
 
 def update_user_data(user_name, password_hash, current_user):
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     if user_name:
         cur.execute(
             """UPDATE users

@@ -3,13 +3,21 @@ from datetime import timedelta
 from flask import Flask
 import mysql.connector as connector
 from mysql.connector import errorcode
+from mysql.connector import MySQLConnection
 
 from .config import secret_phrase, db_credential, db_name
 from .models import TABLES
 from .shoplist import SHOPS
 
 cnx = connector.connect(**db_credential)
-cnx.autocommit = False
+cnx.autocommit = False  # default: False
+
+def cursor(cnx: MySQLConnection):
+    try:
+        cnx.ping(reconnect=True, attempts=3, delay=1)
+    except connector.Error:
+        cnx.reconnect(attempts=3, delay=1)
+    return cnx.cursor()
 
 def create_app():
     app = Flask(__name__)
@@ -17,7 +25,7 @@ def create_app():
         "SECRET_KEY": secret_phrase,
         "PERMANENT_SESSION_LIFETIME": timedelta(days=30),
     })
-    cur = cnx.cursor()
+    cur = cursor(cnx)
     cur.execute(f"CREATE DATABASE IF NOT EXISTS {db_name} DEFAULT CHARACTER SET 'utf8'")
     cur.execute(f"USE {db_name}")
     for table_name in TABLES:
