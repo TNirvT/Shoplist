@@ -41,7 +41,7 @@ export default function Content() {
     <React.Fragment>
       <nav className="navbar navbar-expand-md bg-secondary navbar-dark">
         <div className="container">
-          <a href="#" className="navbar-brand">Shop<span className="text-warning">List</span></a>
+          <a href="#" className="navbar-brand text-warning">ShopList</a>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
             <span className="navbar-toggler-icon"></span>
           </button>
