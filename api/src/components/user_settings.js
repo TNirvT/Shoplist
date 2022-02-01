@@ -34,14 +34,14 @@ export default function UserSettings({setShowContent, screenName}) {
   };
 
   return (
-    <section className="bg-secondary text-light p-2">
+    <section className="bg-light text-dark p-2">
       <div className="container">
         <div className="d-flex justify-content-between">
           <div className="my-2">
             <h3>Settings</h3>
           </div>
           <div className="my-2">
-            <button className="btn btn-primary" onClick={setShowContent}>⟲ Back</button>
+            <button className="btn btn-primary" onClick={setShowContent}>◃&nbsp;&nbsp;Back</button>
           </div>
         </div>
         <div className="my-1">
@@ -52,7 +52,7 @@ export default function UserSettings({setShowContent, screenName}) {
             type="text"
             className="form-control"
             style={{maxWidth: 300}}
-            placeholder={screenName}
+            value={screenName}
             id="userName"
             onBlur={(e) => {
               if (e.target.value.length > 0) {
@@ -75,7 +75,6 @@ export default function UserSettings({setShowContent, screenName}) {
             type="password"
             className="form-control"
             style={{maxWidth: 300}}
-            placeholder="something*secret"
             id="password"
             onBlur={(e) => {
               if (passwordCheck(e)) {
