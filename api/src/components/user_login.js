@@ -58,7 +58,7 @@ export default function UserLogin({setSignup}) {
         <button className="tab-btn btn btn-light border border-2 mx-2">
           Log In
         </button>
-        <button className="tab-btn btn btn-secondary mx-2" onClick={() => setSignup(true)}>
+        <button className="tab-btn btn btn-secondary text-dark mx-2" onClick={() => setSignup(true)}>
           Sign Up
         </button>
       </div>
