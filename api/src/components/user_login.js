@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import axios from "axios";
-import ToggleButton from "./toggle_button";
 
 export default function UserLogin({setSignup}) {
   const [credentials, setCredentials] = useState({});
   const [message, setMessage] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
   const [emailExists, setEmailExists] = useState(false);
 
   function emailExistsCheck(e) {
     const reEmail = /^[\w\.]+@\w+\.\w+$/;
     if ( !reEmail.test(e.target.value.trim()) ) {
       setCredentials({ ...credentials, email: null });
-      setMessage(`Invalid Email`);
+      setEmailMessage(`Invalid Email`);
       return
     };
-    
+
     axios.get("/existing_email", {
       params: {
         new_email: e.target.value.trim(),
@@ -22,14 +22,14 @@ export default function UserLogin({setSignup}) {
     }).then(res => {
       if (res.data.email_exists) {
         setEmailExists(true);
-        setMessage("");
+        setEmailMessage("");
         setCredentials({ ...credentials, email: e.target.value.trim() });
       } else {
-        setMessage(`Email is not registered. Sign Up?`);
+        setEmailMessage(`Email is not registered. Sign Up?`);
       };
     }).catch(err => {
       if (err) {
-        setMessage(err.message);
+        setEmailMessage(err.message);
       }
     });
   };
@@ -53,9 +53,14 @@ export default function UserLogin({setSignup}) {
   };
 
   return (
-    <div className="d-flex flex-column">
-      <div className="text-center text-primary fs-3">
-        Login to account
+    <div className="d-flex flex-column border border-4 rounded-3 m-3">
+      <div className="tab-div mx-auto text-center align-self-center" style={{width:"80vw"}}>
+        <button className="tab-btn btn btn-light border border-2 mx-2">
+          Log In
+        </button>
+        <button className="tab-btn btn btn-secondary mx-2" onClick={() => setSignup(true)}>
+          Sign Up
+        </button>
       </div>
       <div className="mx-auto w-50 m-2">
         <label htmlFor="email" className="form-label">
@@ -69,6 +74,9 @@ export default function UserLogin({setSignup}) {
           onBlur={emailExistsCheck}
         />
       </div>
+      <div className="row mx-auto w-50 m-1 text-danger fst-italic">
+        {emailMessage && <span>{emailMessage}</span>}
+      </div>
       <div className="mx-auto w-50 m-2">
         <label htmlFor="password" className="form-label">
           Password
@@ -76,7 +84,6 @@ export default function UserLogin({setSignup}) {
         <input
           type="password"
           className="form-control"
-          placeholder="secret***"
           id="password"
           onBlur={ e => setCredentials({ ...credentials, password: e.target.value.trim() }) }
         />
@@ -84,19 +91,10 @@ export default function UserLogin({setSignup}) {
       <div className="row mx-auto w-50 m-1 text-danger fst-italic">
         {message && <span>{message}</span>}
       </div>
-      <div className="row mx-auto w-50 m-1 text-center">
-        <div className="col align-self-center">
-          <button className="btn btn-primary my-2" onClick={userLogin}>
-            Log in
-          </button>
-        </div>
-        <div className="col">
-          <ToggleButton
-            text="New user? SignUp"
-            onToggle={() => setSignup(true)}
-            className={"btn btn-info my-2"}
-          />
-        </div>
+      <div className="row mx-auto m-1 text-center align-self-center">
+        <button className="btn btn-primary my-2" onClick={userLogin}>
+          Log in
+        </button>
       </div>
     </div>
   )

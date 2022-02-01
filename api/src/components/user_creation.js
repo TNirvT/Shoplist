@@ -98,9 +98,14 @@ export default function UserCreation({setSignup}) {
   };
 
   return (
-    <div className="d-flex flex-column">
-      <div className="text-center text-info fs-3">
-        Create new account
+    <div className="d-flex flex-column border border-4 rounded-3 m-3">
+      <div className="tab-div mx-auto text-center align-self-center" style={{width:"80vw"}}>
+        <button className="tab-btn btn btn-secondary mx-2" onClick={() => setSignup(false)}>
+          Log In
+        </button>
+        <button className="tab-btn btn btn-light border border-2 mx-2">
+          Sign Up
+        </button>
       </div>
       <div className="mx-auto w-50 m-2">
         <label htmlFor="newUserName" className="form-label">
@@ -145,7 +150,6 @@ export default function UserCreation({setSignup}) {
         <input
           type="password"
           className="form-control"
-          placeholder="secret***"
           id="newPassword"
           onBlur={passwordCheck}
         />
@@ -159,22 +163,10 @@ export default function UserCreation({setSignup}) {
       <div className="row mx-auto w-50 m-1 text-warning text-center">
         {message && <span>{message}</span>}
       </div>
-      <div className="row mx-auto w-50 m-1 text-center">
-        <div className="col align-self-center">
-          <button
-            className="btn btn-info my-2"
-            onClick={createUser}
-          >
-            Sign Up
-          </button>
-        </div>
-        <div className="col">
-          <ToggleButton
-            text="Existing user? Login"
-            onToggle={() => setSignup(false)}
-            className={"btn btn-primary my-2"}
-          />
-        </div>
+      <div className="row mx-auto m-1 text-center align-self-center">
+        <button className="btn btn-info my-2" onClick={createUser}>
+          Sign Up
+        </button>
       </div>
     </div>
   )

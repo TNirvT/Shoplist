@@ -29,3 +29,12 @@
 .btn-margin {
   margin: 0 8px;
 }
+
+.tab-div {
+  position: relative;
+  top: -22px;
+}
+
+.tab-btn {
+  width: 20%;
+}
