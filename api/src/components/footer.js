@@ -1,7 +1,7 @@
 import React from "react";
-import iconGithub from "../github.svg";
-import iconLinkedin from "../linkedin.svg";
-import iconFile from "../file-doc.svg"
+import iconGithub from "../github-svgrepo-com.svg";
+import iconLinkedin from "../linkedin-svgrepo-com.svg";
+import iconRepo from "../git-svgrepo-com.svg"
 
 export default function Footer() {
   return (
@@ -9,18 +9,22 @@ export default function Footer() {
       <div className="container">
         <div className="d-flex justify-content-between">
           <div>
-            <a href="https://github.com/TNirvT/" className="link-light" style={{textDecoration:"none"}}>© 2022 TNirvT</a>
+            <a href="https://github.com/TNirvT/" className="link-light link-nodeco">© 2022 TNirvT</a>
           </div>
           <div>
-            <a href="https://github.com/TNirvT" className="link-light" style={{textDecoration:"none"}}><img src={iconGithub} alt="Github" width="40" className="px-2"/>Github</a>
+            <a href="https://github.com/TNirvT" className="link-light link-nodeco"><img src={iconGithub} alt="Github" width="40" className="px-2"/>Github</a>
           </div>
           <div>
-            <a href="https://linkedin.com" className="link-light" style={{textDecoration:"none"}}><img src={iconLinkedin} alt="LinkedIn" width="40" className="px-2"/>LinkedIn</a>
+            <a href="https://linkedin.com" className="link-light link-nodeco"><img src={iconLinkedin} alt="LinkedIn" width="40" className="px-2"/>LinkedIn</a>
           </div>
           <div>
-            <a href="https://github.com/TNirvT/Shoplist" className="link-light" style={{textDecoration:"none"}}><img src={iconFile} alt="Repository" width="40" className="px-2"/>Repository</a>
+            <a href="https://github.com/TNirvT/Shoplist" className="link-light link-nodeco"><img src={iconRepo} alt="Repository" width="40" className="px-2"/>Repository</a>
           </div>
         </div>
+      </div>
+      <div className="container my-3">
+        Icons by authors on <a href="https://www.svgrepo.com" className="link-light link-nodeco">svgrepo.com</a><br/>
+        <a href="https://github.com/TNirvT/Shoplist/blob/dev/Rescources.md" className="link-light link-nodeco">Details.</a>
       </div>
     </footer>
   )
