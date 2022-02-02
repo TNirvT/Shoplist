@@ -24,7 +24,7 @@ export default function Footer() {
       </div>
       <div className="container my-3">
         Icons by authors on <a href="https://www.svgrepo.com" className="link-light link-nodeco">svgrepo.com</a><br/>
-        <a href="https://github.com/TNirvT/Shoplist/blob/dev/Rescources.md" className="link-light link-nodeco">Details.</a>
+        <a href="https://github.com/TNirvT/Shoplist/blob/dev/Resources.md" className="link-light link-nodeco">Details.</a>
       </div>
     </footer>
   )
