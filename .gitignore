@@ -135,3 +135,5 @@ dmypy.json
 *.bundle.js
 node_modules/
 api/static/images
+*.sh
+api/static/*.bundle.js.LICENSE.txt
