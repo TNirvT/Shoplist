@@ -30,16 +30,10 @@ export default function ShopItemList({setShowAdd}) {
               <div className="mx-1">
                 Confirm to delete?
               </div>
-              <button
-                className="btn btn-danger btn-sm mx-1"
-                onClick={() => onDelete(item.product_id)}
-              >
+              <button className="btn btn-danger btn-sm mx-1" onClick={() => onDelete(item.product_id)}>
                 Confirm
               </button>
-              <button
-                className="btn btn-secondary btn-sm mx-1"
-                onClick={() => setIdToDel("")}
-              >
+              <button className="btn btn-secondary btn-sm mx-1" onClick={() => setIdToDel("")}>
                 Back
               </button>
             </div>
