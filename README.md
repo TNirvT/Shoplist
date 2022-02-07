@@ -23,6 +23,7 @@ react-chartjs-2 (3.3.0)
 ____
 - Only per month price can be retrieved for some items on BestBuy  
 
-> ## ToDo:  
-> ____
-> - Add search function in user item list
+## ToDo:  
+____
+- [ ] Add search function in user item list  
+- [ ] Use Bestbuy API  
