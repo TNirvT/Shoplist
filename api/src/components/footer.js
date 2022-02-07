@@ -9,13 +9,13 @@ export default function Footer() {
       <div className="container">
         <div className="d-flex justify-content-between">
           <div>
-            <a href="https://github.com/TNirvT/" target="_blank" className="link-light link-nodeco">© 2022 TNirvT</a>
+            <a href="https://github.com/TNirvT/" target="_blank" className="link-light link-nodeco">ShopList 2022 | by TNirvT</a>
           </div>
           <div>
             <a href="https://github.com/TNirvT" target="_blank" className="link-light link-nodeco"><img src={iconGithub} alt="Github" width="40" className="px-2"/>Github</a>
           </div>
           <div>
-            <a href="https://linkedin.com" target="_blank" className="link-light link-nodeco"><img src={iconLinkedin} alt="LinkedIn" width="40" className="px-2"/>LinkedIn</a>
+            <a href="https://www.linkedin.com/in/terry-t/" target="_blank" className="link-light link-nodeco"><img src={iconLinkedin} alt="LinkedIn" width="40" className="px-2"/>LinkedIn</a>
           </div>
           <div>
             <a href="https://github.com/TNirvT/Shoplist" target="_blank" className="link-light link-nodeco"><img src={iconRepo} alt="Repository" width="40" className="px-2"/>Repository</a>
