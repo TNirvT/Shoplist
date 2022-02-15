@@ -1,8 +1,11 @@
 # the database store dates(YYYY-MM-DD) in UTC timezone
 from datetime import datetime, timezone, date
 from decimal import Decimal
+from collections import namedtuple
 from . import cnx
 from . import cursor
+
+Price_Date = namedtuple("PriceOfDate", "price date")
 
 def check_existing_source(url):
     cur = cursor(cnx)
@@ -18,42 +21,49 @@ def check_existing_source(url):
     cur.close()
     return result
 
-def get_db_product(product_id):
+def get_product(product_id):
     cur = cursor(cnx)
     cur.execute("SELECT item_name, user_id FROM products WHERE id = %s", (product_id,))
     result = cur.fetchone()[0]
     cur.close()
     return result
 
-def get_db_latest_price(source_id) -> tuple[float, float]:
+def get_latest_price(source_id) -> tuple[float, float]:
     cur = cursor(cnx)
     cur.execute(
         """SELECT price, date FROM price_history WHERE source_id = %s
         ORDER BY date DESC LIMIT 1""",
         (source_id,)
     )
-    result = cur.fetchone()
-    # result tuple = (decimal.Decimal, datetime.date)
-    price = result[0] and float(result[0])
-    latest_utc = datetime(result[1].year, result[1].month, result[1].day, tzinfo=timezone.utc).timestamp()
+
+    price_fetch, date_fetch = cur.fetchone()
+    # fetchone() gives a tuple : (decimal.Decimal, datetime.date)
+    result = Price_Date(price_fetch, date_fetch)
+    price = result.price and float(result.price)
+    latest_utc = datetime(
+        result.date.year,
+        result.date.month,
+        result.date.day,
+        tzinfo=timezone.utc
+    ).timestamp()
     cur.close()
     return price, latest_utc
 
-def get_db_shop(shop_id: int) -> str:
+def get_shop(shop_id: int) -> str:
     cur = cursor(cnx)
     cur.execute("SELECT shop FROM shops WHERE id = %s", (shop_id,))
     shop = cur.fetchone()[0]
     cur.close()
     return shop
 
-def get_db_shopid(shop: str) -> int:
+def get_shopid(shop: str) -> int:
     cur = cursor(cnx)
     cur.execute("SELECT id FROM shops WHERE shop = %s", (shop,))
     shop_id = cur.fetchone()[0]
     cur.close()
     return shop_id
 
-def get_db_user_items(user_id) -> list[tuple[int, str, int]]:
+def get_user_items(user_id) -> list[tuple[int, str, int]]:
     cur = cursor(cnx)
     cur.execute(
         """SELECT s.id, s.url, s.shop_id
@@ -67,7 +77,7 @@ def get_db_user_items(user_id) -> list[tuple[int, str, int]]:
     cur.close()
     return sources
 
-def get_db_user_items_detailed(user_id) -> list[dict]:
+def get_user_items_detailed(user_id) -> list[dict]:
     cur = cnx.cursor(dictionary=True)
     cur.execute(
         """SELECT p.id product_id, p.item_name, p.user_alias, l.source_id, s.url, sh.shop, ph.latest_on, ph_.price
@@ -96,12 +106,13 @@ def get_db_user_items_detailed(user_id) -> list[dict]:
             source["latest_on"].year,
             source["latest_on"].month,
             source["latest_on"].day,
-            tzinfo=timezone.utc).timestamp()
+            tzinfo=timezone.utc
+        ).timestamp()
         source["price"] = source["price"] and float(source["price"])
     cur.close()
     return sources
 
-def get_db_user_items_history(user_id) -> list[dict]:
+def get_user_items_history(user_id) -> list[dict]:
     cur = cursor(cnx)
     # extract list of source ids
     cur.execute(

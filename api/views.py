@@ -1,13 +1,12 @@
 import re
 from datetime import datetime, timezone
-# import decimal
 
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import cnx
 from . import cursor
-from .data import *
+from . import data
 from .shoplist import url_parser, scrap_product_data
 
 views = Blueprint("views", __name__)
@@ -148,12 +147,12 @@ def get_product():
         return jsonify({
             "error": "Invalid URL",
         })
-    source_id = check_existing_source(url_norm)
+    source_id = data.check_existing_source(url_norm)
     if source_id:
-        result_db = get_db_latest_price(source_id)
+        result_db = data.get_latest_price(source_id)
         return jsonify({
             "url_norm": url_norm,
-            "item": get_db_product(source_id),
+            "item": data.get_product(source_id),
             "price": result_db[0],
             "date": result_db[1],
             "shop": shop,
@@ -176,7 +175,7 @@ def add_item():
         return jsonify({
             "error": f"Error when reaching the url({r['url']})",
         })
-    product_linked_to_url = check_existing_source(r["url"])
+    product_linked_to_url = data.check_existing_source(r["url"])
     if product_linked_to_url:
         pid, uid, item, sid = product_linked_to_url
         if uid == current_user:
@@ -184,9 +183,9 @@ def add_item():
                 "error": f"{item} already in record ({pid})",
             })
         else:
-            add_product_w_existing_source(current_user, r["item"], r["alias"], sid)
+            data.add_product_w_existing_source(current_user, r["item"], r["alias"], sid)
             return jsonify({ "added_item": True })
-    add_product(r["url"], get_db_shopid(r["shop"]), current_user, r["item"], r["alias"], r["timestamp"], r["price"])
+    data.add_product(r["url"], data.get_shopid(r["shop"]), current_user, r["item"], r["alias"], r["timestamp"], r["price"])
     return jsonify({ "added_item": True })
 
 @views.route("/remove_item", methods=["DELETE"])
@@ -197,7 +196,7 @@ def remove_item():
     product_id = request.args.get("productID")
     print(f"pid= {product_id}") #debug
     try:
-        remove_product_from_user(product_id, current_user)
+        data.remove_product_from_user(product_id, current_user)
     except Exception as err:
         return jsonify({"error": str(err)})
     return jsonify()
@@ -207,18 +206,18 @@ def user_price_history_update():
     current_user = validate_user()
     if not current_user: return redirect(url_for("views.index"))
 
-    sources = get_db_user_items(current_user)
+    sources = data.get_user_items(current_user)
     for source in sources:
         print(f"source id: {source[0]}") #debug
-        shop = get_db_shop(source[2])
+        shop = data.get_shop(source[2])
         item, price, stamp_today = scrap_product_data(source[1], shop)
         if item == "Can't reach the url":
             print(f"update skipped, source_id: {source[0]}")
             continue
-        elif get_db_latest_price(source[0])[1] == stamp_today:
-            update_today_price(price, source[0], stamp_today)
+        elif data.get_latest_price(source[0])[1] == stamp_today:
+            data.update_today_price(price, source[0], stamp_today)
         else:
-            add_today_price(price, source[0], stamp_today)
+            data.add_today_price(price, source[0], stamp_today)
     return jsonify({ "update_sucess": True })
 
 @views.route("/list_user_items", methods=["GET"])
@@ -226,7 +225,7 @@ def list_user_items():
     current_user = validate_user()
     if not current_user: return redirect(url_for("views.index"))
 
-    results = get_db_user_items_detailed(current_user)
+    results = data.get_user_items_detailed(current_user)
     return jsonify(results)
 
 @views.route("/get_user_items_history", methods=["GET"])
@@ -234,7 +233,7 @@ def get_user_items_history():
     current_user = validate_user()
     if not current_user: return redirect(url_for("views.index"))
 
-    result = get_db_user_items_history(current_user)
+    result = data.get_user_items_history(current_user)
     return jsonify(result)
 
 @views.route("/settings", methods=["PUT"])
@@ -249,5 +248,5 @@ def user_settings():
         password_hash = generate_password_hash(password) # in format "method$salt$hash"
     else:
         password_hash = None
-    update_user_data(user_name, password_hash, current_user)
+    data.update_user_data(user_name, password_hash, current_user)
     return jsonify()
