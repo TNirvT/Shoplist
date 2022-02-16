@@ -12,7 +12,7 @@ Python (>=3.9) required
     pip install -r requirements.txt
 
 beautifulsoup4 (>=4.9.3)  
-lxml (>=4.6.3)  
+lxml (>=4.6.5)  
 Flask (>=2.0.1)  
 gunicorn (>=20.1.0)  
 mysql-connector-python (>=8.0.26)  
@@ -26,7 +26,7 @@ mysql-connector-python (>=8.0.26)
 
     npm install
 
-axios (>=0.21.4)  
+axios (>=0.26.0)  
 react (>=17.0.2)  
 react-chartjs-2 (>=3.3.0)  
 
