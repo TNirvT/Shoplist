@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import axios from "axios";
 
 import ShopAddItem from "./shop_additem";
@@ -38,7 +39,7 @@ export default function Content() {
   }, []);
 
   return (
-    <React.Fragment>
+    <Router>
       <nav className="navbar navbar-expand-md bg-secondary navbar-dark">
         <div className="container">
           <a href="#" className="navbar-brand text-warning">ShopList</a>
@@ -106,6 +107,6 @@ export default function Content() {
         />
       }
       <Footer />
-    </React.Fragment>
+    </Router>
   )
 }
