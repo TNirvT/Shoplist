@@ -99,7 +99,7 @@ export default function UserCreation({setSignup}) {
 
   return (
     <div className="d-flex flex-column border border-4 rounded-3 m-3">
-      <div className="tab-div mx-auto text-center align-self-center" style={{width:"80vw"}}>
+      <div className="tab-div mx-auto text-center align-self-center">
         <button className="tab-btn btn btn-secondary mx-2 text-dark" onClick={() => setSignup(false)}>
           Log In
         </button>

@@ -54,7 +54,7 @@ export default function UserLogin({setSignup}) {
 
   return (
     <div className="d-flex flex-column border border-4 rounded-3 m-3">
-      <div className="tab-div mx-auto text-center align-self-center" style={{width:"80vw"}}>
+      <div className="tab-div mx-auto text-center align-self-center">
         <button className="tab-btn btn btn-light border border-2 mx-2">
           Log In
         </button>
