@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import ToggleButton from "./toggle_button";
 
-export default function UserCreation({setSignup}) {
+export default function UserCreation() {
   const [newUser, setNewUser] = useState({});
   const [nameMessage, setNameMessage] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
@@ -100,9 +100,9 @@ export default function UserCreation({setSignup}) {
   return (
     <div className="d-flex flex-column border border-4 rounded-3 m-3">
       <div className="tab-div mx-auto text-center align-self-center">
-        <button className="tab-btn btn btn-secondary mx-2 text-dark" onClick={() => setSignup(false)}>
+        <a href="/login"><button className="tab-btn btn btn-secondary mx-2 text-dark">
           Log In
-        </button>
+        </button></a>
         <button className="tab-btn btn btn-light border border-2 mx-2">
           Sign Up
         </button>

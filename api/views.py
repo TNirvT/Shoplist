@@ -12,14 +12,16 @@ from .shoplist import url_parser, scrap_product_data
 views = Blueprint("views", __name__)
 
 def validate_user():
-    if session.get("user_id"): return session["user_id"]
-    else: return False
+    if session.get("user_id"):
+        return session["user_id"]
+    else:
+        return False
 
-@views.route("/", methods=["GET"])
-def index():
-    return render_template("home.html")
+# @views.route("/", methods=["GET"])
+# def index():
+#     return render_template("home.html")
 
-@views.route("/login", methods=["POST"])
+@views.route("/login-req", methods=["POST"])
 def login():
     email = request.get_json()["email"]
     password = request.get_json()["password"]
@@ -250,3 +252,8 @@ def user_settings():
         password_hash = None
     data.update_user_data(user_name, password_hash, current_user)
     return jsonify()
+
+@views.route("/", defaults={"path":""})
+@views.route("/<path:path>")
+def catch_all(path):
+    return render_template("home.html")

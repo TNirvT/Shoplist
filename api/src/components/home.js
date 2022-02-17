@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import UserLogin from "./user_login";
 import UserCreation from "./user_creation";
@@ -8,7 +9,7 @@ export default function Home() {
   const [signup, setSignup] = useState(false);
 
   return (
-    <div>
+    <Router>
       <nav className="navbar navbar-expand-md bg-secondary navbar-dark">
         <div className="container">
         <a href="#" className="navbar-brand text-warning">Shoplist</a>
@@ -24,11 +25,15 @@ export default function Home() {
       </section>
       <section className="bg-light text-dark p-1">
         <div className="container">
-          {signup || <UserLogin setSignup={setSignup} />}
-          {signup && <UserCreation setSignup={setSignup} />}
+          <Routes>
+            <Route path="/login" element={<UserLogin />} />
+            <Route path="/signup" element={<UserCreation />} />
+          </Routes>
+          {/* {signup || <UserLogin setSignup={setSignup} />}
+          {signup && <UserCreation setSignup={setSignup} />} */}
         </div>
       </section>
       <Footer />
-    </div>
+    </Router>
   )
 }

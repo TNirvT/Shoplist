@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from flask import Flask
+from flask import Flask, render_template
 import mysql.connector as connector
 from mysql.connector import errorcode
 from mysql.connector import MySQLConnection
@@ -47,5 +47,9 @@ def create_app():
     cur.close()
     from .views import views
     app.register_blueprint(views, url_prefix="/")
+    # @app.route("/", defaults={"path":""})
+    # @app.route("/<path:path>")
+    # def single_page(path):
+    #     return render_template("home.html")
 
     return app

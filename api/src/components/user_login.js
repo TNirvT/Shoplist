@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-export default function UserLogin({setSignup}) {
+export default function UserLogin() {
   const [credentials, setCredentials] = useState({});
   const [message, setMessage] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
@@ -39,7 +39,7 @@ export default function UserLogin({setSignup}) {
       return
     };
 
-    axios.post("/login", {
+    axios.post("/login-req", {
       email: credentials.email,
       password: credentials.password,
     }).then(res => {
@@ -58,9 +58,9 @@ export default function UserLogin({setSignup}) {
         <button className="tab-btn btn btn-light border border-2 mx-2">
           Log In
         </button>
-        <button className="tab-btn btn btn-secondary text-dark mx-2" onClick={() => setSignup(true)}>
+        <a href="/signup"><button className="tab-btn btn btn-secondary text-dark mx-2">
           Sign Up
-        </button>
+        </button></a>
       </div>
       <div className="mx-auto w-50 m-2">
         <label htmlFor="email" className="form-label">
