@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import ToggleButton from "./toggle_button";
+import { Link } from "react-router-dom";
 
 export default function UserCreation() {
   const [newUser, setNewUser] = useState({});
@@ -100,9 +100,9 @@ export default function UserCreation() {
   return (
     <div className="d-flex flex-column border border-4 rounded-3 m-3">
       <div className="tab-div mx-auto text-center align-self-center">
-        <a href="/login"><button className="tab-btn btn btn-secondary mx-2 text-dark">
+        <Link to="/"><button className="tab-btn btn btn-secondary mx-2 text-dark">
           Log In
-        </button></a>
+        </button></Link>
         <button className="tab-btn btn btn-light border border-2 mx-2">
           Sign Up
         </button>

@@ -6,7 +6,6 @@ import UserCreation from "./user_creation";
 import Footer from "./footer";
 
 export default function Home() {
-  const [signup, setSignup] = useState(false);
 
   return (
     <Router>
@@ -26,7 +25,7 @@ export default function Home() {
       <section className="bg-light text-dark p-1">
         <div className="container">
           <Routes>
-            <Route path="/login" element={<UserLogin />} />
+            <Route path="/" element={<UserLogin />} />
             <Route path="/signup" element={<UserCreation />} />
           </Routes>
           {/* {signup || <UserLogin setSignup={setSignup} />}

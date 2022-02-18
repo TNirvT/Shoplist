@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 export default function UserLogin() {
@@ -58,9 +59,9 @@ export default function UserLogin() {
         <button className="tab-btn btn btn-light border border-2 mx-2">
           Log In
         </button>
-        <a href="/signup"><button className="tab-btn btn btn-secondary text-dark mx-2">
+        <Link to="/signup"><button className="tab-btn btn btn-secondary text-dark mx-2">
           Sign Up
-        </button></a>
+        </button></Link>
       </div>
       <div className="mx-auto w-50 m-2">
         <label htmlFor="email" className="form-label">

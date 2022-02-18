@@ -47,9 +47,5 @@ def create_app():
     cur.close()
     from .views import views
     app.register_blueprint(views, url_prefix="/")
-    # @app.route("/", defaults={"path":""})
-    # @app.route("/<path:path>")
-    # def single_page(path):
-    #     return render_template("home.html")
 
     return app

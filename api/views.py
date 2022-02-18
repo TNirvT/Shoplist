@@ -47,7 +47,7 @@ def login():
 @views.route("/logout", methods=["POST"])
 def user_logout():
     session.clear()
-    return redirect(url_for("views.index"))
+    return redirect(url_for("views.catch_all"))
 
 @views.route("/existing_email", methods=["GET"])
 def check_existing_email():
@@ -123,13 +123,13 @@ def user_deletion():
 
 @views.route("/content", methods=["GET"])
 def content():
-    if not validate_user(): return redirect(url_for("views.index"))
+    if not validate_user(): return redirect(url_for("views.catch_all"))
     
     return render_template("content.html")
 
 @views.route("/get_name", methods=["GET"])
 def get_name():
-    if not validate_user(): return redirect(url_for("views.index"))
+    if not validate_user(): return redirect(url_for("views.catch_all"))
 
     cur = cursor(cnx)
     cur.execute(
@@ -142,7 +142,7 @@ def get_name():
 
 @views.route("/get_product_data", methods=["GET"])
 def get_product():
-    if not validate_user(): return redirect(url_for("views.index"))
+    if not validate_user(): return redirect(url_for("views.catch_all"))
 
     url_norm, shop = url_parser(request.args.get("url"))
     if not url_norm:
@@ -171,7 +171,7 @@ def get_product():
 @views.route("/add_item", methods=["PUT"])
 def add_item():
     current_user = validate_user()
-    if not current_user: return redirect(url_for("views.index"))
+    if not current_user: return redirect(url_for("views.catch_all"))
     r = request.get_json()
     if r["item"] == "Can't reach the url":
         return jsonify({
@@ -193,7 +193,7 @@ def add_item():
 @views.route("/remove_item", methods=["DELETE"])
 def remove_item():
     current_user = validate_user()
-    if not current_user: return redirect(url_for("views.index"))
+    if not current_user: return redirect(url_for("views.catch_all"))
 
     product_id = request.args.get("productID")
     print(f"pid= {product_id}") #debug
@@ -206,7 +206,7 @@ def remove_item():
 @views.route("/user_price_history_update", methods=["PUT"])
 def user_price_history_update():
     current_user = validate_user()
-    if not current_user: return redirect(url_for("views.index"))
+    if not current_user: return redirect(url_for("views.catch_all"))
 
     sources = data.get_user_items(current_user)
     for source in sources:
@@ -225,7 +225,7 @@ def user_price_history_update():
 @views.route("/list_user_items", methods=["GET"])
 def list_user_items():
     current_user = validate_user()
-    if not current_user: return redirect(url_for("views.index"))
+    if not current_user: return redirect(url_for("views.catch_all"))
 
     results = data.get_user_items_detailed(current_user)
     return jsonify(results)
@@ -233,7 +233,7 @@ def list_user_items():
 @views.route("/get_user_items_history", methods=["GET"])
 def get_user_items_history():
     current_user = validate_user()
-    if not current_user: return redirect(url_for("views.index"))
+    if not current_user: return redirect(url_for("views.catch_all"))
 
     result = data.get_user_items_history(current_user)
     return jsonify(result)
@@ -241,7 +241,7 @@ def get_user_items_history():
 @views.route("/settings", methods=["PUT"])
 def user_settings():
     current_user = validate_user()
-    if not current_user: return redirect(url_for("views.index"))
+    if not current_user: return redirect(url_for("views.catch_all"))
 
     r = request.get_json() # e.g. r = {"userName": "my name", "password": "321abc"}
     user_name = r.get("userName")
@@ -256,4 +256,5 @@ def user_settings():
 @views.route("/", defaults={"path":""})
 @views.route("/<path:path>")
 def catch_all(path):
+    if validate_user(): return redirect(url_for("views.content"))
     return render_template("home.html")
