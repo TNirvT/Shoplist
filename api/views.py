@@ -111,18 +111,14 @@ def user_creation():
         })
     return "wrong password", 403
 
-@views.route("/user_chg_pw", methods=["PUT"])
-def user_chg_pw():
-    # add code
-    return
-
 @views.route("/user_deletion", methods=["DELETE"])
 def user_deletion():
     # add code
     return
 
-@views.route("/content", methods=["GET"])
-def content():
+@views.route("/content", defaults={"path":""}, methods=["GET"])
+@views.route("/content/<path:path>")
+def content(path):
     if not validate_user(): return redirect(url_for("views.catch_all"))
     
     return render_template("content.html")

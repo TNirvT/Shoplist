@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { Line } from "react-chartjs-2";
 
-export default function ShopItemList({setShowAdd}) {
+export default function ShopItemList() {
   const [message, setMessage] = useState("");
   const [itemList, setItemList] = useState(null);
   const [chartDataSets, setChartDataSets] = useState([]);
@@ -172,7 +173,7 @@ export default function ShopItemList({setShowAdd}) {
             <h3>Tracking Items</h3>
           </div>
           <div className="my-2">
-            <button className="btn btn-primary" onClick={setShowAdd}>⨁&nbsp;&nbsp;Add</button>
+            <Link to="/content/add"><button className="btn btn-primary">⨁&nbsp;&nbsp;Add</button></Link>
           </div>
         </div>
         <div className="m-2">

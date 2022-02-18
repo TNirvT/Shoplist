@@ -1,9 +1,10 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 import plusCircle from "../plus-circle.svg";
 
-export default function ShopAddItem({setShowAdd}) {
+export default function ShopAddItem() {
   const [message, setMessage] = useState("");
   const [disableSave, setDisableSave] = useState(true);
   const [newItem, setNewItem] = useState({
@@ -77,7 +78,7 @@ export default function ShopAddItem({setShowAdd}) {
             <img src={plusCircle} alt="Add item icon" width="60" className="px-2"/>
           </div>
           <div className="my-2">
-            <button className="btn btn-primary" onClick={setShowAdd}>◃&nbsp;&nbsp;Back</button>
+            <Link to="/content"><button className="btn btn-primary">◃&nbsp;&nbsp;Back</button></Link>
           </div>
         </div>
         <div className="my-2">

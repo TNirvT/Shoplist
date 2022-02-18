@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
-export default function UserSettings({setShowContent, screenName}) {
+export default function UserSettings({screenName}) {
   const [userChanges, setUserChanges] = useState({});
   const [passwordMessage, setPasswordMessage] = useState("");
   const [message, setMessage] = useState("");
@@ -41,7 +42,7 @@ export default function UserSettings({setShowContent, screenName}) {
             <h3>Settings</h3>
           </div>
           <div className="my-2">
-            <button className="btn btn-primary" onClick={setShowContent}>◃&nbsp;&nbsp;Back</button>
+            <Link to="/content"><button className="btn btn-primary">◃&nbsp;&nbsp;Back</button></Link>
           </div>
         </div>
         <div className="my-1">

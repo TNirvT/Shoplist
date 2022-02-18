@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import axios from "axios";
 
 import ShopAddItem from "./shop_additem";
@@ -9,9 +9,6 @@ import Footer from "./footer";
 
 export default function Content() {
   const [screenName, setScreenName] = useState("");
-  const [showList, setShowList] = useState(true);
-  const [showAdd, setShowAdd] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
 
   function userLogout() {
     axios.post("/logout").then(res => {
@@ -57,14 +54,9 @@ export default function Content() {
                 </a>
               </li>
               <li className="nav-item">
-                <a href="#" className="nav-link" onClick={() => {
-                  setShowAdd(false);
-                  setShowList(showSettings);
-                  setShowSettings(!showSettings);
-                  return false;
-                }}>
+                <Link to="/content/settings" className="nav-link">
                   Settings
-                </a>
+                </Link>
               </li>
               <li className="nav-item">
                 <a href="#" className="nav-link">
@@ -78,34 +70,11 @@ export default function Content() {
           </div>
         </div>
       </nav>
-      {
-        showList &&
-        <ShopItemList
-          setShowAdd={() => {
-            setShowAdd(true);
-            setShowList(false);
-          }}
-        />
-      }
-      {
-        showAdd &&
-        <ShopAddItem
-          setShowAdd={() => {
-            setShowAdd(false);
-            setShowList(true);
-          }}
-        />
-      }
-      {
-        showSettings &&
-        <UserSettings
-          setShowContent={() => {
-            setShowList(true);
-            setShowSettings(false);
-          }}
-          screenName={screenName}
-        />
-      }
+      <Routes>
+        <Route path="/content" element={<ShopItemList />} />
+        <Route path="/content/add" element={<ShopAddItem />} />
+        <Route path="/content/settings" element={<UserSettings screenName={screenName} />} />
+      </Routes>
       <Footer />
     </Router>
   )
