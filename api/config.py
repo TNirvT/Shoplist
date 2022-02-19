@@ -33,3 +33,11 @@ else:
 
 # database name
 db_name = "shoplist_db"
+
+# bestbuy api key
+bestbuy_api_key_path = secret_dir / "bestbuy_api.key"
+if not bestbuy_api_key_path.is_file():
+    bestbuy_api_key = None
+else:
+    with open(bestbuy_api_key_path, "r") as f:
+        bestbuy_api_key = f.read()

@@ -5,7 +5,7 @@ import mysql.connector as connector
 from mysql.connector import errorcode
 from mysql.connector import MySQLConnection
 
-from .config import secret_phrase, db_credential, db_name
+from .config import secret_phrase, db_credential, db_name, bestbuy_api_key
 from .models import TABLES
 from .shoplist import SHOPS
 
