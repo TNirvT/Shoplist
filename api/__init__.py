@@ -1,11 +1,11 @@
 from datetime import timedelta
 
-from flask import Flask, render_template
+from flask import Flask
 import mysql.connector as connector
 from mysql.connector import errorcode
 from mysql.connector import MySQLConnection
 
-from .config import secret_phrase, db_credential, db_name, bestbuy_api_key
+from .config import secret_phrase, db_credential, db_name
 from .models import TABLES
 from .shoplist import SHOPS
 

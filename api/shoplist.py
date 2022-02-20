@@ -5,6 +5,8 @@ from datetime import datetime, timezone
 
 from bs4 import BeautifulSoup
 
+from .config import bestbuy_api_key
+
 # [shop domain: str, path, params, query: regex str, simple tags: boolean]
 SHOPS = {
     "Amazon US": ["www.amazon.com", r"(/[^/\s]+)?/dp/[^/\s]+", "", "", False],
@@ -85,6 +87,31 @@ def _bestbuy_tags(soup: BeautifulSoup):
     price_raw = price_div.find("span", attrs={"aria-hidden":"true"})
     if price_raw: price_raw = price_raw.text.strip()
     return item, price_raw
+
+class Bestbuy_item:
+    def __init__(self, url: str) -> None:
+        self.url = url
+        self.sku = get_sku(url)
+
+        def get_sku(url):
+            sku = re.sub(r".+bestbuy.com/site/[^/\s]+/", "", url)
+            sku = re.match(r"\d+", sku)
+            return sku.group(0)
+
+    def get_price(self):
+        bestbuy_query = f"https://api.bestbuy.com/v1/products(sku={self.sku})?apiKey={bestbuy_api_key}&sort=salePrice.asc&show=salePrice&format=json"
+        r = requests.get(bestbuy_query)
+        res = r.json()
+        # res = {
+        #   ......,
+        #   "products": [
+        #       {
+        #          "salePrice": 9.99
+        #       }
+        #   ]
+        # }
+        return res["products"][0]["salePrice"]
+
 
 def scrap_product_data(url: str, shop: str):  
     headers = {
