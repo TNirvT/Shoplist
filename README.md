@@ -3,7 +3,7 @@ A web application allows users to create their accounts, and manage their own li
 
 Add items by simply copy and paste the url from an online shopping site, try to grab data from the site, then confirm to add the item to database.
 
-Amazon (US), Best Buy are supported.
+Amazon (US), Best Buy are supported. Digital music, audio book and video are generally not supported however.  
 
 ## Pip install modules
 
