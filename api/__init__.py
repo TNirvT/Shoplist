@@ -39,6 +39,7 @@ def create_app():
             else:
                 print(err.msg)
     for shop in SHOPS:
+    # for shop in SHOPS.values():
         cur.execute("SELECT id, shop FROM shops WHERE shop = %s", (shop,))
         shop_id = cur.fetchone()
         if not shop_id:

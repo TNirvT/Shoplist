@@ -137,3 +137,7 @@ node_modules/
 api/static/images
 *.sh
 api/static/*.bundle.js.LICENSE.txt
+
+# draft.py
+draft.py
+tmp.py

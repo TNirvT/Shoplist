@@ -1,3 +1,4 @@
+from email.policy import default
 import re
 import requests
 from urllib.parse import urlparse, urlunparse
@@ -6,6 +7,88 @@ from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 
 from .config import bestbuy_api_key
+
+# SHOPS = {
+#     "www.amazon.com": "Amazon US",
+#     "www.amazon.co.jp": "Amazon Japan",
+#     "www.amazon.co.us": "Amazon UK",
+#     "www.bhphotovideo.com": "B and H",
+#     "www.bestbuy.com": "Best Buy",
+# }
+
+def _ensure_scheme(url) -> str:
+    url = url.strip()
+    if re.search(r"//(?=[^/\s]+/[^/\s]+)", url):
+        parse_result = urlparse(url, allow_fragments=False)
+    else:
+        parse_result = urlparse("//" + url)
+    parse_result = parse_result._replace(scheme="https")
+    return urlunparse(parse_result)
+
+def get_shop_from_url(url: str):
+    parse_result = urlparse(url)
+    return SHOPS.get(parse_result.netloc, default=None)
+
+class ShopItem:
+    def __init__(self, url: str) -> None:
+        self.url = self.__ensure_scheme(url)
+        # self.baseurl = urlparse(self.url).netloc
+        self.shop = None
+        self.name = None
+        self.price = None
+
+class AmazonUSItem(ShopItem):
+    def __init__(self, url) -> None:
+        super().__init__(url)
+        self.shop = "Amazon US"
+
+class BestbuyItem(ShopItem):
+    def __init__(self, url) -> None:
+        def __get_sku(url):
+            sku = re.sub(r".+bestbuy.com/site/[^/\s]+/", "", url)
+            sku = re.match(r"\d+", sku)
+            return sku.group(0)
+
+        super().__init__(url)
+        self.shop = "Best Buy"
+        self.sku = __get_sku(url)
+
+    def get_name(self):
+        return
+
+    def get_price(self):
+        bestbuy_query = f"https://api.bestbuy.com/v1/products(sku={self.sku})?apiKey={bestbuy_api_key}&sort=salePrice.asc&show=salePrice&format=json"
+        try:
+            r = requests.get(bestbuy_query)
+            res = r.json()  # dictionary
+            # res = {...,
+            #   "products": [
+            #       {"salePrice": 9.99}
+            #   ]
+            # }
+            self.price = res["products"][0]["salePrice"]
+        except requests.exceptions.JSONDecodeError:
+            print("requests JSON decode error")
+        except KeyError:
+            print("no price in response")
+        return self.price
+
+def __scrap_product_data(url: str):
+    url = _ensure_scheme(url)
+    shop = get_shop_from_url(url)
+
+    if shop == "Amazon US":
+        item = AmazonUSItem(url)
+    elif shop == "Amazon Japan":
+        pass
+    elif shop == "Amazon UK":
+        pass
+    elif shop == "B and H":
+        pass
+    elif shop == "Best Buy":
+        item = BestbuyItem(url)
+
+    return item.name, item.price
 
 # [shop domain: str, path, params, query: regex str, simple tags: boolean]
 SHOPS = {
@@ -87,31 +170,6 @@ def _bestbuy_tags(soup: BeautifulSoup):
     price_raw = price_div.find("span", attrs={"aria-hidden":"true"})
     if price_raw: price_raw = price_raw.text.strip()
     return item, price_raw
-
-class Bestbuy_item:
-    def __init__(self, url: str) -> None:
-        self.url = url
-        self.sku = get_sku(url)
-
-        def get_sku(url):
-            sku = re.sub(r".+bestbuy.com/site/[^/\s]+/", "", url)
-            sku = re.match(r"\d+", sku)
-            return sku.group(0)
-
-    def get_price(self):
-        bestbuy_query = f"https://api.bestbuy.com/v1/products(sku={self.sku})?apiKey={bestbuy_api_key}&sort=salePrice.asc&show=salePrice&format=json"
-        r = requests.get(bestbuy_query)
-        res = r.json()
-        # res = {
-        #   ......,
-        #   "products": [
-        #       {
-        #          "salePrice": 9.99
-        #       }
-        #   ]
-        # }
-        return res["products"][0]["salePrice"]
-
 
 def scrap_product_data(url: str, shop: str):  
     headers = {
