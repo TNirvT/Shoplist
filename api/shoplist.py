@@ -1,8 +1,9 @@
 from email.policy import default
 import re
 import requests
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import ParseResult, urlparse, urlunparse
 from datetime import datetime, timezone
+from collections import namedtuple
 
 from bs4 import BeautifulSoup
 
@@ -15,6 +16,8 @@ from .config import bestbuy_api_key
 #     "www.bhphotovideo.com": "B and H",
 #     "www.bestbuy.com": "Best Buy",
 # }
+
+ShopUrl = namedtuple("ShopUrl", "path params query")
 
 def _ensure_scheme(url) -> str:
     url = url.strip()
@@ -31,16 +34,29 @@ def get_shop_from_url(url: str):
 
 class ShopItem:
     def __init__(self, url: str) -> None:
-        self.url = self.__ensure_scheme(url)
+        self.url = url
         # self.baseurl = urlparse(self.url).netloc
         self.shop = None
         self.name = None
         self.price = None
 
+    def __normalize_url(self, shop_url: ShopUrl) -> str:
+        parse_url = urlparse(self.url)
+        match_path = re.match(shop_url.path, parse_url.path)
+        match_params = re.match(shop_url.params, parse_url.params)
+        match_query = re.match(shop_url.query, parse_url.query)
+        if match_path and match_params and match_query:
+            parse_url = parse_url._replace(path=match_path.group(0), params=match_params.group(0), query=match_query.group(0))
+        return urlunparse(parse_url)
+
 class AmazonUSItem(ShopItem):
     def __init__(self, url) -> None:
+        shop_url = ShopUrl(r"(/[^/\s]+)?/dp/[^/\s]+", "", "")
+
         super().__init__(url)
+        self.url = self.__normalize_url(shop_url)
         self.shop = "Amazon US"
+
 
 class BestbuyItem(ShopItem):
     def __init__(self, url) -> None:
