@@ -55,6 +55,9 @@ class ShopItem:
         self.name = None
         self.price = None
 
+    def today(): # return the timestamp at today(UTC) 0:00:00.000
+        return datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+
     def __normalize_url(self, shop_url: ShopUrl) -> str:
         parse_url = urlparse(self.url)
         match_path = re.match(shop_url.path, parse_url.path)
@@ -67,7 +70,17 @@ class ShopItem:
     def req(self):
         r = requests.get(self.url, headers=headers)
         self.status_code = r.status_code
+        if r.status_code > 399:
+            print(f"Error: {r.status_code} reaching {self.url}")
         return BeautifulSoup(r.content, "lxml")
+
+    def __parse_dollar(self) -> float:
+        # remove the thousands separator
+        price_rm_sep = re.sub(r"[,\.](?=\d{3})", "", self.price)
+        # change decimal separator to "."
+        price_decimal = re.sub(r",(?=\d{2}\D)", ".", price_rm_sep)
+        self.price = float(re.search(r"[\d\.]+", price_decimal).group(0))
+        return self.price
 
 class AmazonUSItem(ShopItem):
     def __init__(self, url) -> None:
@@ -81,13 +94,13 @@ class AmazonUSItem(ShopItem):
         self.url = urlunparse(parse_url)
         self.shop = "Amazon US"
 
-    def get_data(self) -> tuple | None:
+    def get_data(self) -> bool:
         soup = self.req()
         name = soup.find("h1", attrs={"id": "title"})
         if name:
             self.name = name.text.strip()
         else:
-            return
+            return False
         price_div = soup.find("div", attrs={"data-feature-name": "corePrice_desktop"})
         if price_div:
             # print("price_div exists") #debug
@@ -95,7 +108,7 @@ class AmazonUSItem(ShopItem):
             if price_raw:
                 self.price = price_raw.text.strip()
                 # print(f"price_raw: {price_raw}") #debug
-        return self.name, self.price
+        return True
 
 class BestbuyItem(ShopItem):
     def __init__(self, url) -> None:
@@ -111,21 +124,22 @@ class BestbuyItem(ShopItem):
         self.shop = "Best Buy"
         self.sku = __get_sku(url)
 
-    def get_data(self) -> tuple | None:
+    def get_data(self) -> bool:
         soup = self.req()
         name_div = soup.find("div", attrs={"class":"sku-title"})
         name = name_div.find("h1")
         if name:
             self.name = name.text.strip()
         else:
-            return
+            return False
         price_div = soup.find("div", attrs={"class":"priceView-hero-price priceView-customer-price"})
         price_raw = price_div.find("span", attrs={"aria-hidden":"true"})
         if price_raw:
             self.price = price_raw.text.strip()
-        return self.name, self.price
+            self.__parse_dollar()
+        return True
 
-    def get_data_by_api(self):
+    def get_data_by_api(self) -> bool:
         bestbuy_query = f"https://api.bestbuy.com/v1/products(sku={self.sku})?apiKey={bestbuy_api_key}&sort=name.asc&show=name,salePrice&format=json"
         try:
             r = requests.get(bestbuy_query)
@@ -137,11 +151,14 @@ class BestbuyItem(ShopItem):
             # }
             self.name = res["products"][0]["name"]
             self.price = res["products"][0]["salePrice"]
+            self.__parse_dollar()
         except requests.exceptions.JSONDecodeError:
             print("requests JSON decode error")
+            return False
         except KeyError:
             print("no price in response")
-        return self.name, self.price
+            return False
+        return True
 
 def __scrap_product_data(url: str):
     url = _ensure_scheme(url)
@@ -157,8 +174,13 @@ def __scrap_product_data(url: str):
         pass
     elif shop == "Best Buy":
         item = BestbuyItem(url)
+        if bestbuy_api_key:
+            item.get_data_by_api()
+        else:
+            item.get_data()
 
-    return item.name, item.price
+    ProductInfo = namedtuple("ProductInfo", "name price")
+    return ProductInfo(item.name, item.price)
 
 # [shop domain: str, path, params, query: regex str, simple tags: boolean]
 SHOPS = {
