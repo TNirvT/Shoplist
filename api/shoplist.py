@@ -19,6 +19,20 @@ from .config import bestbuy_api_key
 
 ShopUrl = namedtuple("ShopUrl", "path params query")
 
+headers = {
+    "accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "accept-encoding":"gzip, deflate, br",
+    "accept-language":"en-GB,en-US;q=0.9,en;q=0.8",
+    "cache-control": "max-age=0",
+    "sec-fetch-dest":"document",
+    "sec-fetch-mode":"navigate",
+    "sec-fetch-site":"cross-site",
+    "sec-fetch-user":"?1",
+    "sec-gpc":"1",
+    "Upgrade-Insecure-Requests":"1",
+    "User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.87 Safari/537.36",
+}
+
 def _ensure_scheme(url) -> str:
     url = url.strip()
     if re.search(r"//(?=[^/\s]+/[^/\s]+)", url):
@@ -37,6 +51,7 @@ class ShopItem:
         self.url = url
         # self.baseurl = urlparse(self.url).netloc
         self.shop = None
+        self.status_code = None
         self.name = None
         self.price = None
 
@@ -49,14 +64,38 @@ class ShopItem:
             parse_url = parse_url._replace(path=match_path.group(0), params=match_params.group(0), query=match_query.group(0))
         return urlunparse(parse_url)
 
+    def req(self):
+        r = requests.get(self.url, headers=headers)
+        self.status_code = r.status_code
+        return BeautifulSoup(r.content, "lxml")
+
 class AmazonUSItem(ShopItem):
     def __init__(self, url) -> None:
         shop_url = ShopUrl(r"(/[^/\s]+)?/dp/[^/\s]+", "", "")
+        parse_url = urlparse(self.__normalize_url(url))
+        shorten = re.split(r"/[^/\s]+(?=/dp/[^/\s]+)", parse_url.path, 1)
+        if len(shorten) > 1:
+            parse_url = parse_url._replace(path=shorten[1])
 
         super().__init__(url)
-        self.url = self.__normalize_url(shop_url)
+        self.url = urlunparse(parse_url)
         self.shop = "Amazon US"
 
+    def get_data(self) -> tuple | None:
+        soup = self.req()
+        name = soup.find("h1", attrs={"id": "title"})
+        if name:
+            self.name = name.text.strip()
+        else:
+            return
+        price_div = soup.find("div", attrs={"data-feature-name": "corePrice_desktop"})
+        if price_div:
+            # print("price_div exists") #debug
+            price_raw = price_div.find("span", attrs={"class": "a-price a-text-price a-size-medium apexPriceToPay"})
+            if price_raw:
+                self.price = price_raw.text.strip()
+                # print(f"price_raw: {price_raw}") #debug
+        return self.name, self.price
 
 class BestbuyItem(ShopItem):
     def __init__(self, url) -> None:
@@ -65,29 +104,44 @@ class BestbuyItem(ShopItem):
             sku = re.match(r"\d+", sku)
             return sku.group(0)
 
+        shop_url = ShopUrl(r"/site/[^/\s]+/\d+\.p", "", r"skuId=\d+")
+
         super().__init__(url)
+        self.url = self.__normalize_url(shop_url)
         self.shop = "Best Buy"
         self.sku = __get_sku(url)
 
-    def get_name(self):
-        return
+    def get_data(self) -> tuple | None:
+        soup = self.req()
+        name_div = soup.find("div", attrs={"class":"sku-title"})
+        name = name_div.find("h1")
+        if name:
+            self.name = name.text.strip()
+        else:
+            return
+        price_div = soup.find("div", attrs={"class":"priceView-hero-price priceView-customer-price"})
+        price_raw = price_div.find("span", attrs={"aria-hidden":"true"})
+        if price_raw:
+            self.price = price_raw.text.strip()
+        return self.name, self.price
 
-    def get_price(self):
-        bestbuy_query = f"https://api.bestbuy.com/v1/products(sku={self.sku})?apiKey={bestbuy_api_key}&sort=salePrice.asc&show=salePrice&format=json"
+    def get_data_by_api(self):
+        bestbuy_query = f"https://api.bestbuy.com/v1/products(sku={self.sku})?apiKey={bestbuy_api_key}&sort=name.asc&show=name,salePrice&format=json"
         try:
             r = requests.get(bestbuy_query)
             res = r.json()  # dictionary
             # res = {...,
             #   "products": [
-            #       {"salePrice": 9.99}
+            #       {"name": "iPhone", "salePrice": 9.99}
             #   ]
             # }
+            self.name = res["products"][0]["name"]
             self.price = res["products"][0]["salePrice"]
         except requests.exceptions.JSONDecodeError:
             print("requests JSON decode error")
         except KeyError:
             print("no price in response")
-        return self.price
+        return self.name, self.price
 
 def __scrap_product_data(url: str):
     url = _ensure_scheme(url)
@@ -188,20 +242,6 @@ def _bestbuy_tags(soup: BeautifulSoup):
     return item, price_raw
 
 def scrap_product_data(url: str, shop: str):  
-    headers = {
-        "accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-        "accept-encoding":"gzip, deflate, br",
-        "accept-language":"en-GB,en-US;q=0.9,en;q=0.8",
-        "cache-control": "max-age=0",
-        "sec-fetch-dest":"document",
-        "sec-fetch-mode":"navigate",
-        "sec-fetch-site":"cross-site",
-        "sec-fetch-user":"?1",
-        "sec-gpc":"1",
-        "Upgrade-Insecure-Requests":"1",
-        "User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.87 Safari/537.36",
-    }
-
     r = requests.get(url, headers=headers)
     
     # in case, error when reaching the url
