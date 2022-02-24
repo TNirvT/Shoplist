@@ -18,20 +18,6 @@ SHOPS = {
 
 ShopUrl = namedtuple("ShopUrl", "path params query")
 
-headers = {
-    "accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-    "accept-encoding":"gzip, deflate, br",
-    "accept-language":"en-GB,en-US;q=0.9,en;q=0.8",
-    "cache-control": "max-age=0",
-    "sec-fetch-dest":"document",
-    "sec-fetch-mode":"navigate",
-    "sec-fetch-site":"cross-site",
-    "sec-fetch-user":"?1",
-    "sec-gpc":"1",
-    "Upgrade-Insecure-Requests":"1",
-    "User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.87 Safari/537.36",
-}
-
 def _ensure_scheme(url) -> str:
     url = url.strip()
     if re.search(r"//(?=[^/\s]+/[^/\s]+)", url):
@@ -71,6 +57,19 @@ class ShopItem:
         return urlunparse(parse_url)
 
     def _fetch(self) -> BeautifulSoup:
+        headers = {
+            "accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "accept-encoding":"gzip, deflate, br",
+            "accept-language":"en-GB,en-US;q=0.9,en;q=0.8",
+            "cache-control": "max-age=0",
+            "sec-fetch-dest":"document",
+            "sec-fetch-mode":"navigate",
+            "sec-fetch-site":"cross-site",
+            "sec-fetch-user":"?1",
+            "sec-gpc":"1",
+            "Upgrade-Insecure-Requests":"1",
+            "User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.87 Safari/537.36",
+        }
         r = requests.get(self.url, headers=headers)
         self.status_code = r.status_code
         if r.status_code > 399:
