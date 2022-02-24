@@ -23,10 +23,19 @@ def check_existing_source(url):
 
 def get_product(product_id):
     cur = cursor(cnx)
-    cur.execute("SELECT item_name, user_id FROM products WHERE id = %s", (product_id,))
-    result = cur.fetchone()[0]
+    cur.execute("SELECT item_name FROM products WHERE id = %s", (product_id,))
+    item_name = cur.fetchone()[0]
+    cur.execute(
+        """SELECT shop.shop
+        FROM products p
+        JOIN product_source_links l ON p.id = l.product_id
+        JOIN sources s ON l.sources_id = s.id
+        JOIN shops ON s.shop_id = shops.id
+        WHERE p.id = %s""", (product_id,)
+    )
+    shop = cur.fetchone()[0]
     cur.close()
-    return result
+    return item_name, shop
 
 def get_latest_price(source_id) -> tuple[float, float]:
     cur = cursor(cnx)

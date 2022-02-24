@@ -7,7 +7,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from . import cnx
 from . import cursor
 from . import data
-from .shoplist import url_parser, scrap_product_data
+# from .shoplist import url_parser, scrap_product_data
+from .shoplist import normalize_url, fetch_product_data
 
 views = Blueprint("views", __name__)
 
@@ -17,9 +18,9 @@ def validate_user():
     else:
         return False
 
-# @views.route("/", methods=["GET"])
-# def index():
-#     return render_template("home.html")
+def today(): # return the timestamp at today(UTC) 0:00:00.000
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    return today.timestamp()
 
 @views.route("/login-req", methods=["POST"])
 def login():
@@ -137,23 +138,42 @@ def get_name():
     return jsonify({"user_name": user_name})
 
 @views.route("/get_product_data", methods=["GET"])
-def get_product():
+def get_product_data():
     if not validate_user(): return redirect(url_for("views.catch_all"))
+
+    url = request.args.get("url")
+    url = normalize_url(url)
+    exist_data = data.check_existing_source(url)
+    if exist_data:
+        result_db = data.get_latest_price(exist_data[3])
+        item_name, shop = data.get_product(exist_data[3])
+        return jsonify({
+            "url_norm": url,
+            "item": item_name,
+            "price": result_db[0],
+            "date": result_db[1],
+            "shop": shop,
+        })
+
+    product_data = fetch_product_data(url)
+    if product_data is None:
+        return jsonify({
+            "error": "Invalid URL",
+        })
+    else:
+        return jsonify({
+            "url_norm": product_data.url,
+            "item": product_data.name,
+            "price": product_data.price,
+            "date": today(),
+            "shop": product_data.shop,
+        })
+######################
 
     url_norm, shop = url_parser(request.args.get("url"))
     if not url_norm:
         return jsonify({
             "error": "Invalid URL",
-        })
-    source_id = data.check_existing_source(url_norm)
-    if source_id:
-        result_db = data.get_latest_price(source_id)
-        return jsonify({
-            "url_norm": url_norm,
-            "item": data.get_product(source_id),
-            "price": result_db[0],
-            "date": result_db[1],
-            "shop": shop,
         })
     result = scrap_product_data(url_norm, shop)
     return jsonify({
@@ -168,6 +188,7 @@ def get_product():
 def add_item():
     current_user = validate_user()
     if not current_user: return redirect(url_for("views.catch_all"))
+
     r = request.get_json()
     if r["item"] == "Can't reach the url":
         return jsonify({
@@ -207,15 +228,16 @@ def user_price_history_update():
     sources = data.get_user_items(current_user)
     for source in sources:
         print(f"source id: {source[0]}") #debug
-        shop = data.get_shop(source[2])
-        item, price, stamp_today = scrap_product_data(source[1], shop)
-        if item == "Can't reach the url":
+        item = fetch_product_data(source[1])
+        name, price = item.name, item.price
+        today_stamp = today()
+        if name == "Can't reach the url":
             print(f"update skipped, source_id: {source[0]}")
             continue
-        elif data.get_latest_price(source[0])[1] == stamp_today:
-            data.update_today_price(price, source[0], stamp_today)
+        elif data.get_latest_price(source[0])[1] == today_stamp:
+            data.update_today_price(price, source[0], today_stamp)
         else:
-            data.add_today_price(price, source[0], stamp_today)
+            data.add_today_price(price, source[0], today_stamp)
     return jsonify({ "update_sucess": True })
 
 @views.route("/list_user_items", methods=["GET"])
