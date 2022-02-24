@@ -1,11 +1,9 @@
 import re
-from datetime import datetime, timezone
 
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from . import cnx
-from . import cursor
+from . import cnx, cursor, today
 from . import data
 from .shoplist import normalize_url, fetch_product_data
 
@@ -16,10 +14,6 @@ def validate_user():
         return session["user_id"]
     else:
         return False
-
-def today(): # return the timestamp at today(UTC) 0:00:00.000
-    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-    return today.timestamp()
 
 @views.route("/login-req", methods=["POST"])
 def login():
@@ -215,7 +209,7 @@ def user_price_history_update():
         product_data = fetch_product_data(source[1])
         name, price = product_data.name, product_data.price
         today_stamp = today()
-        if name == "Can't reach the url":
+        if name is None:
             print(f"update skipped, source_id: {source[0]}")
             continue
         elif data.get_latest_price(source[0])[1] == today_stamp:

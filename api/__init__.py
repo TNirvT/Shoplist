@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone
 
 from flask import Flask
 import mysql.connector as connector
@@ -19,7 +19,12 @@ def cursor(cnx: MySQLConnection):
         cnx.reconnect(attempts=3, delay=1)
     return cnx.cursor()
 
+def today(): # return the timestamp at today(UTC) 0:00:00.000
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    return today.timestamp()
+
 def create_app():
+    print("running create_app ...")
     app = Flask(__name__)
     app.config.from_mapping({
         "SECRET_KEY": secret_phrase,
@@ -49,4 +54,5 @@ def create_app():
     from .views import views
     app.register_blueprint(views, url_prefix="/")
 
+    print("... successful")
     return app

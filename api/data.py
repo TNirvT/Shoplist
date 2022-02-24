@@ -2,8 +2,7 @@
 from datetime import datetime, timezone, date
 from decimal import Decimal
 from collections import namedtuple
-from . import cnx
-from . import cursor
+from . import cnx, cursor, db_name
 
 Price_Date = namedtuple("PriceOfDate", "price date")
 
@@ -283,3 +282,16 @@ def update_user_data(user_name, password_hash, current_user):
         )
     cnx.commit()
     cur.close()
+
+##### functions for main_updater.py only #####
+
+def get_url_all_sources() -> list[str]:
+    cur = cursor(cnx)
+    cur.execute(f"USE {db_name}")
+    cur.execute(
+        """SELECT id, url
+        FROM sources"""
+    )
+    sources = cur.fetchall() # sources=[(id1, url1), (id2, url2), ...]
+    cur.close()
+    return sources
