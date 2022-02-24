@@ -1,8 +1,7 @@
 from email.policy import default
 import re
 import requests
-from urllib.parse import ParseResult, urlparse, urlunparse
-from datetime import datetime, timezone
+from urllib.parse import urlparse, urlunparse
 from collections import namedtuple
 
 from bs4 import BeautifulSoup
@@ -75,7 +74,7 @@ class ShopItem:
         r = requests.get(self.url, headers=headers)
         self.status_code = r.status_code
         if r.status_code > 399:
-            print(f"ShopItem fetch Error: {r.status_code} reaching {self.url}")
+            print(f"ShopItem fetch error: {r.status_code} reaching {self.url}")
         return BeautifulSoup(r.content, "lxml")
 
     def _parse_dollar(self, price) -> float:
@@ -109,7 +108,7 @@ class AmazonUSItem(ShopItem):
             price_raw = price_tag.find("span", attrs={"class": "a-price a-text-price a-size-medium apexPriceToPay"})
             self.price = self._parse_dollar(price_raw.text.strip())
         except Exception as err:
-            print("Amazon US get data Error:", err)
+            print("Amazon US get data error:", err)
             return False
         return True
 
@@ -118,9 +117,12 @@ class BestbuyItem(ShopItem):
         super().__init__(url)
 
         def __get_sku(url) -> str:
-            sku = re.sub(r".+bestbuy.com/site/[^/\s]+/", "", url)
-            sku = re.match(r"\d+", sku)
-            return sku.group(0)
+            sku = re.search(r"(?<=skuId\=)\d+", url)
+            if sku:
+                return sku.group(0)
+            else:
+                print("BestBuyItem get sku error")
+                return None
 
         shop_url = ShopUrl(r"/site/[^/\s]+/\d+\.p", "", r"skuId=\d+")
 
@@ -141,7 +143,7 @@ class BestbuyItem(ShopItem):
             self.name = res["products"][0]["name"]
             self.price = self._parse_dollar(res["products"][0]["salePrice"])
         except Exception as err:
-            print("BestBuy get data Error:", err)
+            print("BestBuy get data error:", err)
             return False
         return True
 
@@ -155,12 +157,11 @@ class BestbuyItem(ShopItem):
             price_raw = price_tag.find("span", attrs={"aria-hidden":"true"})
             self.price = self._parse_dollar(price_raw.text.strip())
         except Exception as err:
-            print("BestBuy get data Error:", err)
+            print("BestBuy get data error:", err)
             return False
         return True
-    
-    def get_data(self) -> bool:
 
+    def get_data(self) -> bool:
         if bestbuy_api_key:
             return self.__get_data_by_api()
         else:

@@ -7,7 +7,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from . import cnx
 from . import cursor
 from . import data
-# from .shoplist import url_parser, scrap_product_data
 from .shoplist import normalize_url, fetch_product_data
 
 views = Blueprint("views", __name__)
@@ -168,21 +167,6 @@ def get_product_data():
             "date": today(),
             "shop": product_data.shop,
         })
-######################
-
-    url_norm, shop = url_parser(request.args.get("url"))
-    if not url_norm:
-        return jsonify({
-            "error": "Invalid URL",
-        })
-    result = scrap_product_data(url_norm, shop)
-    return jsonify({
-        "url_norm": url_norm,
-        "item": result[0],
-        "price": result[1],
-        "date": result[2],
-        "shop": shop,
-    })
 
 @views.route("/add_item", methods=["PUT"])
 def add_item():
@@ -228,8 +212,8 @@ def user_price_history_update():
     sources = data.get_user_items(current_user)
     for source in sources:
         print(f"source id: {source[0]}") #debug
-        item = fetch_product_data(source[1])
-        name, price = item.name, item.price
+        product_data = fetch_product_data(source[1])
+        name, price = product_data.name, product_data.price
         today_stamp = today()
         if name == "Can't reach the url":
             print(f"update skipped, source_id: {source[0]}")
