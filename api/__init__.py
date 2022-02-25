@@ -17,7 +17,9 @@ def cursor(cnx: MySQLConnection):
         cnx.ping(reconnect=True, attempts=3, delay=1)
     except connector.Error:
         cnx.reconnect(attempts=3, delay=1)
-    return cnx.cursor()
+    cur = cnx.cursor()
+    cur.execute(f"USE {db_name}")
+    return cur
 
 def today(): # return the timestamp at today(UTC) 0:00:00.000
     today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
