@@ -2,6 +2,7 @@ import re
 import requests
 from urllib.parse import urlparse, urlunparse
 from collections import namedtuple
+from time import sleep
 
 from bs4 import BeautifulSoup
 
@@ -143,10 +144,11 @@ class BestbuyItem(ShopItem):
         except Exception as err:
             print("BestBuy get data error:", err)
             return False
+        sleep(1.5)
         return True
 
     def __get_data_by_tag(self) -> bool:
-        soup = self.__fetch()
+        soup = self._fetch()
         name_tag = soup.find("div", attrs={"class":"sku-title"})
         price_tag = soup.find("div", attrs={"class":"priceView-hero-price priceView-customer-price"})
         try:
