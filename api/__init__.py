@@ -32,7 +32,7 @@ def create_app():
         "SECRET_KEY": secret_phrase,
         "PERMANENT_SESSION_LIFETIME": timedelta(days=30),
     })
-    cur = cursor(cnx)
+    cur = cnx.cursor()
     cur.execute(f"CREATE DATABASE IF NOT EXISTS {db_name} DEFAULT CHARACTER SET 'utf8'")
     cur.execute(f"USE {db_name}")
     for table_name in TABLES:
@@ -46,7 +46,6 @@ def create_app():
             else:
                 print(err.msg)
     for shop in SHOPS.values():
-    # for shop in SHOPS.values():
         cur.execute("SELECT id, shop FROM shops WHERE shop = %s", (shop,))
         shop_id = cur.fetchone()
         if not shop_id:
