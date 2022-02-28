@@ -6,6 +6,53 @@ from . import cnx, cursor, db_name
 
 Price_Date = namedtuple("PriceOfDate", "price date")
 
+def login(email):
+    cur = cursor(cnx)
+    cur.execute(
+        "SELECT password_hash, id FROM users WHERE email = (%s)",
+        (email,)
+    )
+    hash_from_db, user_id = cur.fetchone()
+    cur.close()
+    return hash_from_db, user_id
+
+def check_existing_email(email) -> bool:
+    cur = cursor(cnx)
+    cur.execute(
+        "SELECT email FROM users WHERE email = %s",
+        (email,)
+    )
+    result = bool(cur.fetchone())
+    cur.close()
+    return result
+
+def user_creation(user_email, user_name, password_hash) -> tuple[str, str]:
+    cur = cursor(cnx)
+    cur.execute(
+        """INSERT INTO users(email, user_name, password_hash)
+        VALUES (%s, %s, %s)""",
+        (user_email, user_name, password_hash,)
+    )
+    cnx.commit()
+
+    cur.execute(
+        "SELECT password_hash, id, user_name FROM users WHERE email = %s",
+        (user_email,)
+    )
+    hash_from_db, id_from_db, name_from_db = cur.fetchone()
+    cur.close()
+    return hash_from_db, id_from_db
+
+def get_user_name(user_id) -> str:
+    cur = cursor(cnx)
+    cur.execute(
+        "SELECT user_name FROM users WHERE id = %s",
+        (user_id,)
+    )
+    user_name = cur.fetchone()[0]
+    cur.close()
+    return user_name
+
 def check_existing_source(url):
     cur = cursor(cnx)
     cur.execute(

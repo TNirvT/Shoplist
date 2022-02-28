@@ -3,7 +3,7 @@ import re
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from . import cnx, cursor, today
+from . import today
 from . import data
 from .shoplist import normalize_url, fetch_product_data
 
@@ -20,16 +20,10 @@ def login():
     email = request.get_json()["email"]
     password = request.get_json()["password"]
 
-    cur = cursor(cnx)
-    cur.execute(
-        "SELECT password_hash, id FROM users WHERE email = (%s)",
-        (email,)
-    )
-    data_fr_db = cur.fetchone()
-    cur.close()
+    hash_from_db, user_id = data.login(email)
 
-    if data_fr_db and check_password_hash(data_fr_db[0], password):
-        session["user_id"] = data_fr_db[1]
+    if hash_from_db and check_password_hash(hash_from_db, password):
+        session["user_id"] = user_id
         session.permanent = True
         return jsonify({
             "redirect": "logged in successfully, redirecting to content...",
@@ -47,13 +41,7 @@ def user_logout():
 def check_existing_email():
     new_email = request.args.get("new_email")
 
-    cur = cursor(cnx)
-    cur.execute(
-        "SELECT email FROM users WHERE email = %s",
-        (new_email,)
-    )
-    result = bool(cur.fetchone())
-    cur.close()
+    result = data.check_existing_email(new_email)
     return jsonify({"email_exists": result})
 
 @views.route("/user_creation", methods=["PUT"])
@@ -67,37 +55,19 @@ def user_creation():
     if not p.match(user_email):
         return "Invalid user email", 403
 
-    cur = cursor(cnx)
-    cur.execute(
-        "SELECT email FROM users WHERE email = %s",
-        (user_email,)
-    )
-    if cur.fetchone():
-        cur.close()
+    email_is_registered = data.check_existing_email()
+    if email_is_registered:
         return "User email already registered", 403
 
     password = request.get_json()["password"].strip()
     if len(password) < 6 or len(password) > 30 or " " in password:
-        cur.close()
         return "Invalid password", 403
 
     password_hash = generate_password_hash(password) # in format "method$salt$hash"
-    cur.execute(
-        """INSERT INTO users(email, user_name, password_hash)
-        VALUES (%s, %s, %s)""",
-        (user_email, user_name, password_hash,)
-    )
-    cnx.commit()
+    hash_from_db, id_from_db = data.user_creation(user_email, user_name, password_hash)
 
-    cur.execute(
-        "SELECT password_hash, id, user_name FROM users WHERE email = %s",
-        (user_email,)
-    )
-    result = cur.fetchone()
-    cur.close()
-
-    if result and check_password_hash(result[0], password):
-        session["user_id"] = result[1]
+    if hash_from_db and check_password_hash(hash_from_db, password):
+        session["user_id"] = id_from_db
         session.permanent = True
         return jsonify({
             "redirect": f"new account created for {user_email}, redirecting to content...",
@@ -121,13 +91,7 @@ def content(path):
 def get_name():
     if not validate_user(): return redirect(url_for("views.catch_all"))
 
-    cur = cursor(cnx)
-    cur.execute(
-        "SELECT user_name FROM users WHERE id = %s",
-        (session["user_id"],)
-    )
-    user_name = cur.fetchone()[0]
-    cur.close()
+    user_name = data.get_user_name(session["user_id"])
     return jsonify({"user_name": user_name})
 
 @views.route("/get_product_data", methods=["GET"])
