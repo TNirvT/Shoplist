@@ -1,8 +1,6 @@
 from datetime import datetime
 import time
 
-import mysql.connector as connector
-
 from api.shoplist import fetch_product_data
 from api import today
 from api import data
