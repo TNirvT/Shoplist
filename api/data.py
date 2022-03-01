@@ -167,6 +167,52 @@ def get_user_items_detailed(user_id) -> list[dict]:
     cur.close()
     return sources
 
+def get_this_history(product_id) -> list[dict]:
+    cur = cursor(cnx)
+    # extract list of source id
+    cur.execute(
+        """SELECT s.id, p.item_name, p.user_alias
+        FROM sources s
+        JOIN product_source_links l ON s.id = l.source_id
+        JOIN products p ON l.product_id = p.id
+        WHERE p.id = %s""",
+        (product_id,)
+    )
+    source = cur.fetchone()
+    result = []
+    cur.execute(
+        """SELECT ph.date, ph.price
+        FROM price_history ph
+        WHERE ph.source_id = %s""",
+        (source[0],)
+    )
+    history_data = cur.fetchall()
+    # history_data = [(datetime.date, decimal.Decimal | None), ...]
+    result.append({
+        "source_id": source[0],
+        "item_name": source[1],
+        "user_alias": source[2],
+        "stamp_prices": list(map(
+            lambda x: [
+                datetime(x[0].year, x[0].month, x[0].day, tzinfo=timezone.utc).timestamp(),
+                x[1] and float(x[1])
+            ],
+            history_data
+        ))
+    })
+    cur.close()
+
+    # e.g. result =
+    # [{
+    #       'source_id': 1,
+    #       'item_name': 'name',
+    #       'user_alias': 'alias',
+    #       'stamp_prices': [ [float(timestamp), float(price)|None], ... ]
+    # }]
+    # print(*result, sep="\n") # debug
+    print(f"history result: {len(result)}") # debug
+    return result
+
 def get_user_items_history(user_id) -> list[dict]:
     cur = cursor(cnx)
     # extract list of source ids

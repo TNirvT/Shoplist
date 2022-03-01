@@ -190,6 +190,15 @@ def list_user_items():
     results = data.get_user_items_detailed(current_user)
     return jsonify(results)
 
+@views.route("/get_this_history", methods=["GET"])
+def get_this_history():
+    current_user = validate_user()
+    if not current_user: return redirect(url_for("views.catch_all"))
+
+    product_id = request.args.get("productID")
+    result = data.get_this_history(product_id)
+    return jsonify(result)
+
 @views.route("/get_user_items_history", methods=["GET"])
 def get_user_items_history():
     current_user = validate_user()

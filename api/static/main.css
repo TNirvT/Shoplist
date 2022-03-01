@@ -19,6 +19,13 @@
   100% { transform: rotate(360deg); }
 }
 
+.showHistoryBtn {
+  color: #30d7dd;
+  border-bottom: 1px dotted black;
+  cursor: pointer;
+  margin: 0 8px;
+}
+
 .deleteBtn {
   color: #dd3030;
   border-bottom: 1px dotted black;

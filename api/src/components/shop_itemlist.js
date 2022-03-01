@@ -10,6 +10,7 @@ export default function ShopItemList() {
   const [showChart, setShowChart] = useState(false);
   const [loading, setLoading] = useState(false);
   const [idToDel, setIdToDel] = useState("");
+  const [idForChart, setIdForChart] = useState("");
 
   let rowsArr = []
   if (itemList) {
@@ -20,6 +21,9 @@ export default function ShopItemList() {
           <a href={item.url} className="link-primary mx-2" target="_blank">
             {item.shop}
           </a>
+          <span className="showHistoryBtn fst-italic mx-2" onClick={() => getThisHistory(item.product_id)}>
+            Show history
+          </span>
           <span className="deleteBtn fst-italic mx-2" onClick={() => setIdToDel(item.product_id)}>
             delete
           </span>
@@ -39,6 +43,27 @@ export default function ShopItemList() {
               </button>
             </div>
           }
+          {/* { idForChart === item.product_id &&
+            <div className="alert alert-info alert-dismissible fade show d-flex align-items-center" role="alert">
+              <div className="mx-1">
+              <Line
+                data={{
+                  labels: daysLabelArr,
+                  datasets: chartDataSets
+                }}
+                width={500}
+                height={200}
+                options={{
+                  scales: {
+                    y: {beginAtZero: true}
+                  }
+                }}
+              />
+              </div>
+              <button type="button" className="btn-close" aria-label="close" onClick={() => setIdForChart("")}>
+              </button>
+            </div>
+          } */}
         </td>
         <td style={{width:"20%"}}>${item.price}</td>
       </tr>
@@ -114,6 +139,37 @@ export default function ShopItemList() {
     return pricesFormatted
   };
 
+  function getThisHistory(productID) {
+    axios.get("/get_this_history", {
+      params: {
+        productID: productID,
+      }
+    }).then(res => {
+      let rawData = res.data;
+      // rawData = [{
+      //   'source_id': 1,
+      //   'item_name': 'name',
+      //   'user_alias': 'alias',
+      //   'stamp_prices': [ [number(10 digit timestamp), number(price)|None], ... ]
+      // }]
+      console.log(rawData[0]);
+      setChartDataSets([{
+        label: rawData[0].item_name,
+        data: dataRearrange(rawData[0].stamp_prices),
+        fill: false,
+        backgroundColor: "rgb(255, 99, 132)",
+        borderColor: "rgba(255, 99, 132, 0.2)",
+      }]);
+      console.log("get this history done");
+      setIdForChart(productID);
+    }).catch(err => {
+      if (err) {
+        setMessage(err.message);
+        console.log(err.message);
+      }
+    });
+  };
+
   function getItemHistory() {
     axios.get("/get_user_items_history").then(res => {
       let rawData = res.data;
@@ -186,9 +242,9 @@ export default function ShopItemList() {
           <div className="loader"></div>
         }
         <span>{message}</span><br/>
-        <button className="btn btn-primary my-1" onClick={priceUpdate}>Price update(user's items)</button><br/>
-        <button className="btn btn-primary my-1" onClick={getItemHistory}>Get Item History</button><br/>
-        {
+        <button className="btn btn-primary my-1" onClick={priceUpdate}>⟳ Refresh</button><br/>
+        {/* <button className="btn btn-primary my-1" onClick={getItemHistory}>Get Item History</button><br/> */}
+        {/* {
           showChart &&
           <Line
             data={{
@@ -203,6 +259,27 @@ export default function ShopItemList() {
               }
             }}
           />
+        } */}
+        { idForChart &&
+          <div>
+            <div className="mx-1">
+            <Line
+              data={{
+                labels: daysLabelArr,
+                datasets: chartDataSets
+              }}
+              width={500}
+              height={200}
+              options={{
+                scales: {
+                  y: {beginAtZero: true}
+                }
+              }}
+            />
+            </div>
+            <button type="button" className="btn-close" aria-label="close" onClick={() => setIdForChart("")}>
+            </button>
+          </div>
         }
       </div>
     </section>
