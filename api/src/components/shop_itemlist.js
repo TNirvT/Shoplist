@@ -9,8 +9,8 @@ export default function ShopItemList() {
   const [chartDataSets, setChartDataSets] = useState([]);
   const [showChart, setShowChart] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [idToDel, setIdToDel] = useState("");
-  const [idForChart, setIdForChart] = useState("");
+  const [idToDel, setIdToDel] = useState(null);
+  const [idForChart, setIdForChart] = useState(null);
 
   let rowsArr = []
   if (itemList) {
@@ -38,32 +38,11 @@ export default function ShopItemList() {
               <button className="btn btn-danger btn-sm mx-1" onClick={() => onDelete(item.product_id)}>
                 Confirm
               </button>
-              <button className="btn btn-secondary btn-sm mx-1" onClick={() => setIdToDel("")}>
+              <button className="btn btn-secondary btn-sm mx-1" onClick={() => setIdToDel(null)}>
                 Back
               </button>
             </div>
           }
-          {/* { idForChart === item.product_id &&
-            <div className="alert alert-info alert-dismissible fade show d-flex align-items-center" role="alert">
-              <div className="mx-1">
-              <Line
-                data={{
-                  labels: daysLabelArr,
-                  datasets: chartDataSets
-                }}
-                width={500}
-                height={200}
-                options={{
-                  scales: {
-                    y: {beginAtZero: true}
-                  }
-                }}
-              />
-              </div>
-              <button type="button" className="btn-close" aria-label="close" onClick={() => setIdForChart("")}>
-              </button>
-            </div>
-          } */}
         </td>
         <td style={{width:"20%"}}>${item.price}</td>
       </tr>
@@ -227,6 +206,7 @@ export default function ShopItemList() {
         <div className="d-flex justify-content-between">
           <div className="my-2">
             <h3>Tracking Items</h3>
+            <button className="btn btn-primary my-1" onClick={priceUpdate}>⟳ Refresh</button><br/>
           </div>
           <div className="my-2">
             <Link to="/content/add"><button className="btn btn-primary">⨁&nbsp;&nbsp;Add</button></Link>
@@ -242,7 +222,6 @@ export default function ShopItemList() {
           <div className="loader"></div>
         }
         <span>{message}</span><br/>
-        <button className="btn btn-primary my-1" onClick={priceUpdate}>⟳ Refresh</button><br/>
         {/* <button className="btn btn-primary my-1" onClick={getItemHistory}>Get Item History</button><br/> */}
         {/* {
           showChart &&
@@ -261,25 +240,22 @@ export default function ShopItemList() {
           />
         } */}
         { idForChart &&
-          <div>
-            <div className="mx-1">
-            <Line
-              data={{
-                labels: daysLabelArr,
-                datasets: chartDataSets
-              }}
-              width={500}
-              height={200}
-              options={{
-                scales: {
-                  y: {beginAtZero: true}
-                }
-              }}
-            />
-            </div>
-            <button type="button" className="btn-close" aria-label="close" onClick={() => setIdForChart("")}>
-            </button>
-          </div>
+          <React.Fragment>
+          <button type="button" class="btn-close" aria-label="Close" onClick={() => setIdForChart(null)}></button>
+          <Line
+            data={{
+              labels: daysLabelArr,
+              datasets: chartDataSets
+            }}
+            width={500}
+            height={200}
+            options={{
+              scales: {
+                y: {beginAtZero: true}
+              }
+            }}
+          />
+          </React.Fragment>
         }
       </div>
     </section>
