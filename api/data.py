@@ -376,6 +376,38 @@ def update_user_data(user_name, password_hash, current_user):
     cnx.commit()
     cur.close()
 
+def delete_user(user_id):
+    cur = cursor(cnx)
+    cur.execute(
+        """SELECT id
+        FROM products
+        WHERE user_id = %s""",
+        (user_id,)
+    )
+    product_ids = [x[0] for x in cur.fetchall()]
+    # remove product_source_links
+    format_strings = ",".join(["%s"] * len(product_ids))
+    cur.execute(
+        """DELETE FROM product_source_links
+        WHERE product_id IN (%s)""" % format_strings,
+        tuple(product_ids)
+    )
+    cnx.commit()
+    # remove products belong to user
+    cur.execute(
+        """DELETE FROM products
+        WHERE user_id = %s""",
+        (user_id,)
+    )
+    # finally, remove the user
+    cur.execute(
+        """DELETE FROM users
+        WHERE id = %s""",
+        (user_id,)
+    )
+    cur.close()
+    return
+
 ##### functions for main_updater.py only #####
 
 def get_url_all_sources() -> list[str]:
