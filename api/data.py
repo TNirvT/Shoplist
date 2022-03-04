@@ -392,7 +392,6 @@ def delete_user(user_id):
         WHERE product_id IN (%s)""" % format_strings,
         tuple(product_ids)
     )
-    cnx.commit()
     # remove products belong to user
     cur.execute(
         """DELETE FROM products
@@ -405,8 +404,22 @@ def delete_user(user_id):
         WHERE id = %s""",
         (user_id,)
     )
+    cnx.commit()
+    # query the db to confirm user is deleted
+    cur.execute(
+        """SELECT id
+        FROM users
+        WHERE id = %s""",
+        (user_id,)
+    )
+    query_deleted = cur.fetchone()
     cur.close()
-    return
+    if query_deleted is not None:
+        print(f"failed to delete user {user_id}") #debug
+        return False
+    else:
+        print(f"deleted the user {user_id}") #debug
+        return True
 
 ##### functions for main_updater.py only #####
 
