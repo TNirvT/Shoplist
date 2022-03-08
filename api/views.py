@@ -77,8 +77,14 @@ def user_creation():
 
 @views.route("/user_deletion", methods=["DELETE"])
 def user_deletion():
-    # add code
-    return
+    current_user = validate_user()
+    if not current_user: return redirect(url_for("views.catch_all"))
+
+    is_deleted = data.delete_user(current_user)
+    if is_deleted:
+        return "user deleted", 200
+    else:
+        return "unable to delete user", 400
 
 @views.route("/content", defaults={"path":""}, methods=["GET"])
 @views.route("/content/<path:path>")
