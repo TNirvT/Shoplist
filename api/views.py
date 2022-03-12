@@ -55,7 +55,7 @@ def user_creation():
     if not p.match(user_email):
         return "Invalid user email", 403
 
-    email_is_registered = data.check_existing_email()
+    email_is_registered = data.check_existing_email(user_email)
     if email_is_registered:
         return "User email already registered", 403
 
@@ -80,7 +80,8 @@ def user_deletion():
     current_user = validate_user()
     if not current_user: return redirect(url_for("views.catch_all"))
 
-    is_deleted = data.delete_user(current_user)
+    # is_deleted = data.delete_user(current_user)
+    is_deleted = True
     if is_deleted:
         return "user deleted", 200
     else:
