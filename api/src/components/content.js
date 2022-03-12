@@ -62,7 +62,7 @@ export default function Content() {
                 <a href="#" className="nav-link">
                   <svg width={32} height={32}>
                     <circle cx={16} cy={16} r={16} fill="white"/>
-                    <text x="50%" y="50%" fill="black" dominant-baseline="middle" text-anchor="middle">{screenName.substring(0, 2)}</text>
+                    <text x="50%" y="50%" fill="black" dominantBaseline="middle" textAnchor="middle">{screenName.substring(0, 2)}</text>
                   </svg>
                 </a>
               </li>
