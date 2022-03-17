@@ -70,6 +70,7 @@ def check_existing_source(url):
 def get_product(product_id):
     cur = cursor(cnx)
     cur.execute("SELECT item_name FROM products WHERE id = %s", (product_id,))
+    # use try except! delete user will delete the product id too
     item_name = cur.fetchone()[0]
     cur.execute(
         """SELECT shop.shop
